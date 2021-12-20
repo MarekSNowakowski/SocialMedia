@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace SocialMedia.Core.Domain
+namespace SocialMedia.Infrastructure.DTO
 {
-    public class Post
+    public class PostDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
