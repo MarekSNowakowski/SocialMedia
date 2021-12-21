@@ -48,13 +48,19 @@ namespace SocialMedia.Infrastructure.Services
         public async Task<IEnumerable<PostDTO>> BrowseAllAsync()
         {
             var z = await _postRepository.BrowseAllAsync();
-            return MapPosts(z);
+            if (z != null)
+                return MapPosts(z);
+            else
+                return null;
         }
 
         public async Task<PostDTO> GetPostAsync(int id)
         {
             Post z = await _postRepository.GetAsync(id);
-            return MapPost(z);
+            if (z != null)
+                return MapPost(z);
+            else
+                return null;
         }
 
         public async Task AddPostAsync(CreatePost post)
@@ -63,7 +69,8 @@ namespace SocialMedia.Infrastructure.Services
             {
                 Title = post.Title,
                 Image = post.Image,
-                Author = post.Author
+                Author = post.Author,
+                Time = DateTime.Now
             };
 
             await _postRepository.AddAsync(newPost);

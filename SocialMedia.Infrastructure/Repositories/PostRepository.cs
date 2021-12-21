@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Infrastructure.Repositories
 {
-    class PostRepository : IPostRepository
+    public class PostRepository : IPostRepository
     {
         private readonly AppDbContext _appDbContext;
 
