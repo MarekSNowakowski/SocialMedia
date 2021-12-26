@@ -69,6 +69,9 @@ namespace Zawodnicy.WebApp.Controllers
                 }
             }
 
+
+            ModelState.AddModelError("", "Niepoprawna nazwa użytkownika lub hasło...");
+
             return View(loginVM);
         }
 

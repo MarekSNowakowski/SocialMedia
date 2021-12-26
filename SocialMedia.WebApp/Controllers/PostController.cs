@@ -11,21 +11,30 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using SocialMedia.WebApp.Models;
+using Microsoft.Extensions.Logging;
 
 namespace SocialMedia.WebApp.Controllers
 {
     public class PostController : Controller
     {
-        public IConfiguration Configuration;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<PostController> _logger;
 
-        public PostController(IConfiguration configuration)
+        //JSON token data
+        private const string SECRET = "SuperTajneHaslo2137";
+        private const string NAME = "Marek";
+        private const string EMAIL = "01153053@pw.edu.pl";
+        private const string ADRESS = "http://www.nowakom3.pl";
+
+        public PostController(IConfiguration configuration, ILogger<PostController> logger)
         {
-            Configuration = configuration;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         public ContentResult GetHostUrl()
         {
-            var result = Configuration["RestApiUrl:HostUrl"];
+            var result = _configuration["RestApiUrl:HostUrl"];
             return Content(result);
         }
 
@@ -37,18 +46,18 @@ namespace SocialMedia.WebApp.Controllers
 
         private string GenerateJSONWebToken()
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SuperTajneHaslo2137"));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SECRET));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-                new Claim("Name", "Marek"),
-                new Claim(JwtRegisteredClaimNames.Email, "01153053@pw.edu.pl")
+                new Claim("Name", NAME),
+                new Claim(JwtRegisteredClaimNames.Email, EMAIL)
             };
 
             var token = new JwtSecurityToken(
-                issuer: "http://www.nowakom3.pl",
-                audience: "http://www.nowakom3.pl",
+                issuer: ADRESS,
+                audience: ADRESS,
                 expires: DateTime.Now.AddHours(3),
                 signingCredentials: credentials,
                 claims: claims
@@ -66,14 +75,22 @@ namespace SocialMedia.WebApp.Controllers
 
             List<PostVM> skiJumpersList = new List<PostVM>();
 
-            using (var httpClient = new HttpClient())
+            try
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                using (var response = await httpClient.GetAsync(_restpath))
+                using (var httpClient = new HttpClient())
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    skiJumpersList = JsonConvert.DeserializeObject<List<PostVM>>(apiResponse);
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync(_restpath))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        skiJumpersList = JsonConvert.DeserializeObject<List<PostVM>>(apiResponse);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Getting posts failed!");
+                return View(ex);
             }
 
             return View(skiJumpersList);    //view is strongly typed
@@ -86,17 +103,25 @@ namespace SocialMedia.WebApp.Controllers
 
             PostVM s = new PostVM();
 
-            using (var httpClient = new HttpClient())
+            try
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                using (var response = await httpClient.GetAsync($"{_restpath}/{id}"))
+                using (var httpClient = new HttpClient())
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    s = JsonConvert.DeserializeObject<PostVM>(apiResponse);
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync($"{_restpath}/{id}"))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        s = JsonConvert.DeserializeObject<PostVM>(apiResponse);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Editing post with ID {id} failed!");
+                return View(ex);
+            }
 
-            return View(s);    //view is strongly typed
+            return View(s);
         }
 
         [HttpPost]
@@ -122,13 +147,14 @@ namespace SocialMedia.WebApp.Controllers
                         result = JsonConvert.DeserializeObject<PostVM>(apiResponse);
                     }
                 }
-
             }
             catch (Exception ex)
             {
+                _logger.LogWarning($"Editing post with ID {s.Id} failed!");
                 return View(ex);
             }
 
+            _logger.LogInformation($"Editing post with ID {s.Id} succeded!");
             return RedirectToAction(nameof(Index));
         }
 
@@ -139,22 +165,31 @@ namespace SocialMedia.WebApp.Controllers
 
             string _restpath = GetHostUrl().Content + CN();
 
-            using (var httpClient = new HttpClient())
+            try
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                using (var response = await httpClient.DeleteAsync($"{_restpath}/{id}"))
+                using (var httpClient = new HttpClient())
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.DeleteAsync($"{_restpath}/{id}"))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Deleting post with ID {id} failed!");
+                return View(ex);
+            }
 
-            return RedirectToAction(nameof(Index));    //view is strongly typed
+            _logger.LogInformation($"Deleting post with ID: {id} succeded!");
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Create()
         {
             PostVM s = new PostVM();
-            return await Task.FromResult(View(s));    //view is strongly typed
+            return await Task.FromResult(View(s));
         }
 
         [HttpPost]
@@ -184,9 +219,11 @@ namespace SocialMedia.WebApp.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogWarning($"Creating post failed!");
                 return View(ex);
             }
 
+            _logger.LogInformation($"Creating post with title: {result.Title} succeded!");
             return RedirectToAction(nameof(Index));
         }
     }
