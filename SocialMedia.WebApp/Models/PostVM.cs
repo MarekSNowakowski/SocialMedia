@@ -18,10 +18,12 @@ namespace SocialMedia.WebApp.Models
 
         [Required]
         [BindProperty]
-        public IFormFile Image { get; set; }
+        [DataType(DataType.Upload)]
+        [FileExtensions(Extensions = "jpg,png,gif,jpeg,bmp,svg")]
+        public IFormFile Photo { get; set; }
 
         //Other properties
-
+        public string PhotoPath { get; set; }
         public int Id { get; set; }
         public DateTime Time { get; set; }
         public string Author { get; set; }

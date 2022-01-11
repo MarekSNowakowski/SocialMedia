@@ -9,7 +9,7 @@ namespace SocialMedia.Infrastructure.DTO
         public int Id { get; set; }
         public string Title { get; set; }
         public DateTime Time { get; set; }
-        public byte[] Image { get; set; }
+        public string PhotoPath { get; set; }
         public string Author { get; set; }
     }
 }

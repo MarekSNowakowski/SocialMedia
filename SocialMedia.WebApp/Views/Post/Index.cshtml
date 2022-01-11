@@ -5,7 +5,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Posts</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -23,39 +23,46 @@
                 @Html.DisplayNameFor(model => model.Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Image)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Author)
             </th>
             <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Photo)
+            </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Time)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Image)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Author)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @* @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) | *@
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @* @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) | *@
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+            @{
+                var photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
+            }
+            <td>
+                <div class="form-group row col-sm-4 offset-4">
+                    <img class="imageThumbnail" src="@photoPath" asp-append-version="true" />
+                </div>
+            </td>
+        </tr>
+            @*Display the existing employee photo*@
+
         }
     </tbody>
-</table>
+    </table>

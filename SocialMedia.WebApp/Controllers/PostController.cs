@@ -12,6 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using SocialMedia.WebApp.Models;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SocialMedia.WebApp.Controllers
 {
@@ -19,6 +22,7 @@ namespace SocialMedia.WebApp.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<PostController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         //JSON token data
         private const string SECRET = "SuperTajneHaslo2137";
@@ -26,10 +30,11 @@ namespace SocialMedia.WebApp.Controllers
         private const string EMAIL = "01153053@pw.edu.pl";
         private const string ADRESS = "http://www.nowakom3.pl";
 
-        public PostController(IConfiguration configuration, ILogger<PostController> logger)
+        public PostController(IConfiguration configuration, ILogger<PostController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _configuration = configuration;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public ContentResult GetHostUrl()
@@ -201,10 +206,26 @@ namespace SocialMedia.WebApp.Controllers
 
             PostVM result = new PostVM();
 
+            if (s.Photo != null)
+            {
+                // If a new photo is uploaded, the existing photo must be
+                // deleted. So check if there is an existing photo and delete
+                if (s.PhotoPath != null)
+                {
+                    string filePath = Path.Combine(_webHostEnvironment.WebRootPath,
+                        "images", s.PhotoPath);
+                    System.IO.File.Delete(filePath);
+                }
+                // Save the new photo in wwwroot/images folder and update
+                // PhotoPath property of the employee object
+                s.PhotoPath = ProcessUploadedFile(s.Photo);
+            }
+            _logger.LogInformation(s.PhotoPath);
             try
             {
                 using (var httpClient = new HttpClient())
                 {
+                    s.Photo = null;
                     string jsonString = System.Text.Json.JsonSerializer.Serialize(s);
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
@@ -225,6 +246,23 @@ namespace SocialMedia.WebApp.Controllers
 
             _logger.LogInformation($"Creating post with title: {result.Title} succeded!");
             return RedirectToAction(nameof(Index));
+        }
+        private string ProcessUploadedFile(IFormFile Photo)
+        {
+            string uniqueFileName = null;
+
+            if (Photo != null)
+            {
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + Photo.FileName;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    Photo.CopyTo(fileStream);
+                }
+            }
+
+            return uniqueFileName;
         }
     }
 }

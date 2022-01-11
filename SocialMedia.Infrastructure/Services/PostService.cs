@@ -26,7 +26,7 @@ namespace SocialMedia.Infrastructure.Services
                 Id = x.Id,
                 Title = x.Title,
                 Time = x.Time,
-                Image = x.Image,
+                PhotoPath = x.PhotoPath,
                 Author = x.Author
             });
         }
@@ -38,7 +38,7 @@ namespace SocialMedia.Infrastructure.Services
                 Id = post.Id,
                 Title = post.Title,
                 Time = post.Time,
-                Image = post.Image,
+                PhotoPath = post.PhotoPath,
                 Author = post.Author
             };
 
@@ -68,7 +68,7 @@ namespace SocialMedia.Infrastructure.Services
             Post newPost = new Post()
             {
                 Title = post.Title,
-                Image = post.Image,
+                PhotoPath = post.PhotoPath,
                 Author = post.Author,
                 Time = DateTime.Now
             };
@@ -85,7 +85,7 @@ namespace SocialMedia.Infrastructure.Services
         {
             Post updatePost = await _postRepository.GetAsync(id);
             updatePost.Title = skiJumper.Title;
-            updatePost.Image = skiJumper.Image;
+            updatePost.PhotoPath = skiJumper.PhotoPath;
             updatePost.Author = skiJumper.Author;
 
             await _postRepository.UpdateAsync(updatePost);

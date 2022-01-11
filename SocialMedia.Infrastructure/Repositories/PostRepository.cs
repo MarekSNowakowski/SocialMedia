@@ -61,7 +61,7 @@ namespace SocialMedia.Infrastructure.Repositories
                 var z = _appDbContext.Post.FirstOrDefault(x => x.Id == s.Id);
 
                 z.Title = s.Title;
-                z.Image = s.Image;
+                z.PhotoPath = s.PhotoPath;
 
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
