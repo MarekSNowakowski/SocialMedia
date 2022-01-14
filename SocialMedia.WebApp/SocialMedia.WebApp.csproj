@@ -19,4 +19,8 @@
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\css\post_style.css" />
+  </ItemGroup>
+
 </Project>

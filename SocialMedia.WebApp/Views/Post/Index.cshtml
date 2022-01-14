@@ -1,68 +1,39 @@
 ﻿@model IEnumerable<SocialMedia.WebApp.Models.PostVM>
-@using System.IO;
 
 @{
     ViewData["Title"] = "Index";
 }
+<link rel="stylesheet" type="text/css" href="~/css/post_style.css" />
 
 <h1>Posts</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Author)
-            </th>
-            <th></th>
-            <th>
-                @Html.DisplayNameFor(model => model.Photo)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Time)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Author)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @* @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) | *@
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-            @{
-                var photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
-            }
-            <td>
-                <div class="form-group row col-sm-4 offset-4">
-                    <img class="imageThumbnail" src="@photoPath" asp-append-version="true" />
-                </div>
-            </td>
-        </tr>
-            @*Display the existing employee photo*@
 
-        }
-    </tbody>
-    </table>
+
+@foreach (var item in Model)
+{
+    string photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
+    string dateFormated = item.Time.ToString("M") + ", " + item.Time.ToString("t");
+
+    <div class="post">
+        <div class="post-title">
+            @Html.DisplayFor(modelItem => item.Title)
+        </div>
+        <div class="post-time">
+            @dateFormated
+        </div>
+        <div class="post-author">
+            @Html.DisplayFor(modelItem => item.Author)
+        </div>
+        <div class="post-edit">
+            @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+        </div>
+        <div class="post-delete">
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+        </div>
+
+        <img class="post-image" src="@photoPath" asp-append-version="true" />
+    </div>
+    }

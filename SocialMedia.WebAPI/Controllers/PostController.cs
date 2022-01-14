@@ -41,7 +41,7 @@ namespace SocialMedia.WebAPI.Controllers
 
         // post/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditSkiJumper(int id, [FromBody] CreatePost post)
+        public async Task<IActionResult> EditPost(int id, [FromBody] CreatePost post)
         {
             await _postRepository.EditPostAsync(id, post);
             return NoContent();
