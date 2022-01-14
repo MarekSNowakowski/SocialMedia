@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<SocialMedia.WebApp.Models.PostVM>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
     ViewData["Title"] = "Index";
@@ -7,9 +9,20 @@
 
 <h1>Posts</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (SignInManager.IsSignedIn(User))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+else
+{
+    <p>
+        <a asp-controller="Account" asp-action="Login">Zaloguj się</a> aby dodać post
+    </p>
+}
+
+
 
 
 @foreach (var item in Model)
@@ -36,4 +49,4 @@
 
         <img class="post-image" src="@photoPath" asp-append-version="true" />
     </div>
-    }
+}

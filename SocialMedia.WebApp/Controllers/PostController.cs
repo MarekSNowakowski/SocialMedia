@@ -15,9 +15,11 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SocialMedia.WebApp.Controllers
 {
+    [Authorize]
     public class PostController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -71,6 +73,7 @@ namespace SocialMedia.WebApp.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var tokenString = GenerateJSONWebToken();
@@ -219,13 +222,25 @@ namespace SocialMedia.WebApp.Controllers
                 // Save the new photo in wwwroot/images folder and update
                 // PhotoPath property of the employee object
                 s.PhotoPath = ProcessUploadedFile(s.Photo);
+                _logger.LogInformation($"Created photo name:  {s.PhotoPath}");
             }
-            _logger.LogInformation(s.PhotoPath);
+            else
+            {
+                _logger.LogWarning("Image was not created during creation of a post!");
+            }
             try
             {
+                s.Photo = null;
+                // Set author
+                s.Author = User.Identity.Name;
+
+                if (s.Author.IsNullOrEmpty())
+                {
+                    return View(new Exception("Post creation try without valid user!"));
+                }
+
                 using (var httpClient = new HttpClient())
                 {
-                    s.Photo = null;
                     string jsonString = System.Text.Json.JsonSerializer.Serialize(s);
                     var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
