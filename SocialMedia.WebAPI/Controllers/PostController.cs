@@ -39,7 +39,7 @@ namespace SocialMedia.WebAPI.Controllers
             return Created("", post);  //zwróci 201
         }
 
-        // post/{id}
+        // put/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> EditPost(int id, [FromBody] CreatePost post)
         {

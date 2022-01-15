@@ -30,23 +30,30 @@ else
     string photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
     string dateFormated = item.Time.ToString("M") + ", " + item.Time.ToString("t");
 
-    <div class="post">
-        <div class="post-title">
-            @Html.DisplayFor(modelItem => item.Title)
-        </div>
-        <div class="post-time">
-            @dateFormated
-        </div>
-        <div class="post-author">
-            @Html.DisplayFor(modelItem => item.Author)
-        </div>
+<div class="post">
+    <div class="post-title">
+        @Html.DisplayFor(modelItem => item.Title)
+    </div>
+    <div class="post-time">
+        @dateFormated
+    </div>
+    <div class="post-author">
+        @Html.DisplayFor(modelItem => item.Author)
+    </div>
+
+    @if (User.IsInRole("admin") || User.IsInRole("moderator"))  @* To modify posts you need to be at least moderator *@
+    {
         <div class="post-edit">
             @Html.ActionLink("Edit", "Edit", new { id = item.Id })
         </div>
+    }
+    @if (item.Author == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
+    {
         <div class="post-delete">
             @Html.ActionLink("Delete", "Delete", new { id = item.Id })
         </div>
+    }
 
-        <img class="post-image" src="@photoPath" asp-append-version="true" />
-    </div>
+    <img class="post-image" src="@photoPath" asp-append-version="true" />
+</div>
 }

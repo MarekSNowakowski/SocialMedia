@@ -81,12 +81,11 @@ namespace SocialMedia.Infrastructure.Services
             await _postRepository.DelAsync(id);
         }
 
-        public async Task EditPostAsync(int id, CreatePost skiJumper)
+        public async Task EditPostAsync(int id, CreatePost post)
         {
             Post updatePost = await _postRepository.GetAsync(id);
-            updatePost.Title = skiJumper.Title;
-            updatePost.PhotoPath = skiJumper.PhotoPath;
-            updatePost.Author = skiJumper.Author;
+            updatePost.Title = post.Title;
+            updatePost.PhotoPath = post.PhotoPath;
 
             await _postRepository.UpdateAsync(updatePost);
         }

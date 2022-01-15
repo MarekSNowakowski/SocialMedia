@@ -78,7 +78,6 @@ namespace SocialMedia.WebApp.Controllers
         {
             var tokenString = GenerateJSONWebToken();
 
-            //string _restpath = "http://localhost:5000/skijumper";
             string _restpath = GetHostUrl().Content + CN();
 
             List<PostVM> skiJumpersList = new List<PostVM>();
@@ -129,6 +128,11 @@ namespace SocialMedia.WebApp.Controllers
                 return View(ex);
             }
 
+            if(!CheckIfCorrectUser(s.Author))
+            {
+                return View(new Exception("Post editing try without valid user!"));
+            }
+
             return View(s);
         }
 
@@ -141,8 +145,32 @@ namespace SocialMedia.WebApp.Controllers
 
             PostVM result = new PostVM();
 
+            if (s.Photo != null)
+            {
+                // If a new photo is uploaded, the existing photo must be
+                // deleted. So check if there is an existing photo and delete
+                if (s.PhotoPath != null)
+                {
+                    string filePath = Path.Combine(_webHostEnvironment.WebRootPath,
+                        "images", s.PhotoPath);
+                    System.IO.File.Delete(filePath);
+                }
+                // Save the new photo in wwwroot/images folder and update
+                // PhotoPath property of the employee object
+                s.PhotoPath = ProcessUploadedFile(s.Photo);
+                _logger.LogInformation($"Created photo name:  {s.PhotoPath}");
+            }
+            else
+            {
+                _logger.LogWarning("Image was not created during edition of a post!");
+            }
+
             try
             {
+                s.Photo = null;
+                // Set author
+                s.Author = User.Identity.Name;
+
                 using (var httpClient = new HttpClient())
                 {
                     string jsonString = System.Text.Json.JsonSerializer.Serialize(s);
@@ -177,6 +205,24 @@ namespace SocialMedia.WebApp.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
+                    using (var response = await httpClient.GetAsync($"{_restpath}/{id}"))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var s = JsonConvert.DeserializeObject<PostVM>(apiResponse);
+
+                        if (s.PhotoPath != null)
+                        {
+                            string filePath = Path.Combine(_webHostEnvironment.WebRootPath,
+                                "images", s.PhotoPath);
+                            System.IO.File.Delete(filePath);
+                        }
+
+                        if (!CheckIfCorrectUser(s.Author))
+                        {
+                            throw new Exception("Post editing try without valid user!");
+                        }
+                    }
+   
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
                     using (var response = await httpClient.DeleteAsync($"{_restpath}/{id}"))
                     {
@@ -279,5 +325,11 @@ namespace SocialMedia.WebApp.Controllers
 
             return uniqueFileName;
         }
+
+        private bool CheckIfCorrectUser(string author)
+        {
+            return author == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("Moderator");
+        }
+   
     }
 }
