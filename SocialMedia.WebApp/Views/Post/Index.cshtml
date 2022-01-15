@@ -5,55 +5,47 @@
 @{
     ViewData["Title"] = "Index";
 }
-<link rel="stylesheet" type="text/css" href="~/css/post_style.css" />
 
 <h1>Posts</h1>
 
-@if (SignInManager.IsSignedIn(User))
-{
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-}
-else
-{
-    <p>
-        <a asp-controller="Account" asp-action="Login">Zaloguj się</a> aby dodać post
-    </p>
-}
-
-
-
-
-@foreach (var item in Model)
-{
-    string photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
-    string dateFormated = item.Time.ToString("M") + ", " + item.Time.ToString("t");
-
-<div class="post">
-    <div class="post-title">
-        @Html.DisplayFor(modelItem => item.Title)
-    </div>
-    <div class="post-time">
-        @dateFormated
-    </div>
-    <div class="post-author">
-        @Html.DisplayFor(modelItem => item.Author)
-    </div>
-
-    @if (User.IsInRole("admin") || User.IsInRole("moderator"))  @* To modify posts you need to be at least moderator *@
+<div class="mb-2">
+    @if (SignInManager.IsSignedIn(User))
     {
-        <div class="post-edit">
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id })
-        </div>
+        <p>
+            <a asp-action="Create">Create New</a>
+        </p>
     }
-    @if (item.Author == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
+    else
     {
-        <div class="post-delete">
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-        </div>
+        <p>
+            <a asp-controller="Account" asp-action="Login">Zaloguj się</a> aby dodać post
+        </p>
     }
-
-    <img class="post-image" src="@photoPath" asp-append-version="true" />
 </div>
-}
+
+    @foreach (var item in Model)
+    {
+        string photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
+        string dateFormated = item.Time.ToString("M") + ", " + item.Time.ToString("t");
+
+        <div class="card mb-5 box-shadow bg-secondary bg-gradient">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-light"> @Html.DisplayFor(modelItem => item.Author) </small>
+                    <small class="text-light"> @dateFormated </small>
+                    <div class="btn-group">
+                        @if (User.IsInRole("admin") || User.IsInRole("moderator"))@* To modify posts you need to be at least moderator *@
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-dark">@Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @style = "color: white;" })</button>
+                        }
+                        @if (item.Author == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-dark">@Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @style = "color: white;" })</button>
+                        }
+                    </div>
+                </div>
+                <big class="card-text">@Html.DisplayFor(modelItem => item.Title)</big>
+            </div>
+            <img class="card-img-bottom" style="width: 100%; display: block;" src="@photoPath" asp-append-version="true">
+        </div>
+    }
