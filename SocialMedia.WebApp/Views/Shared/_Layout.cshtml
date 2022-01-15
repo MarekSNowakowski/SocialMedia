@@ -22,20 +22,14 @@
                     <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Post" asp-action="Index">Posts</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Post" asp-action="Index">Posty</a>
                             </li>
 
                             @* Account *@
                             @if (SignInManager.IsSignedIn(User))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="Index">Account</a>
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="Index">Konto</a>
                                     @* Witaj @User.Identity.Name *@
                                 </li>
 
@@ -69,7 +63,7 @@
         <footer class="border-top footer border-dark">
             <div class="p-3 bg-secondary text-white">
                 <div class="container">
-                    &copy; Marek Nowakowski - 2021Z - SocialMedia.WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    &copy; Marek Nowakowski - 2021Z - SocialMedia.WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Polityka prywatności</a>
                 </div>
             </div>
         </footer>

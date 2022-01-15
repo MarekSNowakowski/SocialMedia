@@ -8,12 +8,16 @@
 
 <h1>Posts</h1>
 
-<div class="mb-2">
+<div class="mb-5">
     @if (SignInManager.IsSignedIn(User))
     {
-        <p>
-            <a asp-action="Create">Create New</a>
-        </p>
+    <p>
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary">
+                @Html.ActionLink("Create New", "Create", "Post", null, new { @style = "color: white;" })
+            </button>
+        </div>
+    </p>
     }
     else
     {
@@ -23,7 +27,7 @@
     }
 </div>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Reverse())
     {
         string photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
         string dateFormated = item.Time.ToString("M") + ", " + item.Time.ToString("t");
