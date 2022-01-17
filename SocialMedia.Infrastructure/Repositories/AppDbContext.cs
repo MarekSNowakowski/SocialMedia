@@ -13,5 +13,7 @@ namespace SocialMedia.Infrastructure.Repositories
         }
 
         public DbSet<Post> Post { get; set; }
+        public DbSet<Comment> Comment { get; set; }
+        public DbSet<UserData> UserData { get; set; }
     }
 }

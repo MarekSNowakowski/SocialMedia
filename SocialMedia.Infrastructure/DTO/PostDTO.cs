@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SocialMedia.Core.Domain;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SocialMedia.Infrastructure.DTO
 {
@@ -10,6 +10,8 @@ namespace SocialMedia.Infrastructure.DTO
         public string Title { get; set; }
         public DateTime Time { get; set; }
         public string PhotoPath { get; set; }
-        public string Author { get; set; }
+        public UserData Author { get; set; }
+        public SortedSet<int> UpvotedUserIds { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }
