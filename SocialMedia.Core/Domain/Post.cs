@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SocialMedia.Core.Domain
 {
@@ -8,6 +9,8 @@ namespace SocialMedia.Core.Domain
         public string Title { get; set; }
         public DateTime Time { get; set; }
         public string PhotoPath { get; set; }
-        public string Author { get; set; }
+        public UserData Author { get; set; }
+        public SortedSet<int> UpvotedUserIds { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }
