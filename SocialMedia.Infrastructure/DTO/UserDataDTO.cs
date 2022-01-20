@@ -9,5 +9,6 @@ namespace SocialMedia.Infrastructure.DTO
         public string Email { get; set; }
         public DateTime Birthday { get; set; }
         public string AvatarPhotoPath { get; set; }
+        public DateTime RegistrationTime { get; set; }
     }
 }
