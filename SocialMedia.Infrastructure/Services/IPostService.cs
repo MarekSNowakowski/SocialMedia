@@ -12,5 +12,7 @@ namespace SocialMedia.Infrastructure.Services
         Task AddPostAsync(CreatePost post);
         Task EditPostAsync(int id, CreatePost post);
         Task DeletePostAsync(int id);
+        Task UpVotePostAsync(int id, UserDataDTO userData);
+        Task AddCommentToPostAsync(int id, CommentDTO commentDTO);
     }
 }

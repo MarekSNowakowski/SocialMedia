@@ -11,7 +11,7 @@ namespace SocialMedia.Infrastructure.DTO
         public DateTime Time { get; set; }
         public string PhotoPath { get; set; }
         public UserData Author { get; set; }
-        public SortedSet<int> UpvotedUserIds { get; set; }
+        public List<UserData> UpvotedUsers { get; set; }
         public List<Comment> Comments { get; set; }
     }
 }

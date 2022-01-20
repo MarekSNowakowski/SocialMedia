@@ -19,7 +19,7 @@ namespace SocialMedia.Infrastructure.Services
             _postRepository = postRepository;
         }
 
-        private IEnumerable<PostDTO> MapPosts(IEnumerable<Post> posts)
+        public static IEnumerable<PostDTO> MapPosts(IEnumerable<Post> posts)
         {
             return posts.Select(x => new PostDTO()
             {
@@ -27,22 +27,24 @@ namespace SocialMedia.Infrastructure.Services
                 Title = x.Title,
                 Time = x.Time,
                 PhotoPath = x.PhotoPath,
-                Author = x.Author
+                Author = x.Author,
+                UpvotedUsers = x.UpvotedUsers,
+                Comments = x.Comments
             });
         }
 
-        private PostDTO MapPost(Post post)
+        public static PostDTO MapPost(Post post)
         {
-            var postDTO = new PostDTO()
+            return new PostDTO()
             {
                 Id = post.Id,
                 Title = post.Title,
                 Time = post.Time,
                 PhotoPath = post.PhotoPath,
-                Author = post.Author
+                Author = post.Author,
+                UpvotedUsers = post.UpvotedUsers,
+                Comments = post.Comments
             };
-
-            return postDTO;
         }
 
         public async Task<IEnumerable<PostDTO>> BrowseAllAsync()
@@ -70,7 +72,9 @@ namespace SocialMedia.Infrastructure.Services
                 Title = post.Title,
                 PhotoPath = post.PhotoPath,
                 Author = post.Author,
-                Time = DateTime.Now
+                Time = DateTime.Now,
+                UpvotedUsers = new List<UserData>(),
+                Comments = new List<Comment>()
             };
 
             await _postRepository.AddAsync(newPost);
@@ -88,6 +92,24 @@ namespace SocialMedia.Infrastructure.Services
             updatePost.PhotoPath = post.PhotoPath;
 
             await _postRepository.UpdateAsync(updatePost);
+        }
+
+        public async Task UpVotePostAsync(int id, UserDataDTO userDataDTO)
+        {
+            Post post = await _postRepository.GetAsync(id);
+            UserData userData = UserDataService.MapUserData(userDataDTO);
+            post.UpvotedUsers.Add(userData);
+
+            await _postRepository.UpdateAsync(post);
+        }
+
+        public async Task AddCommentToPostAsync(int id, CommentDTO commentDTO)
+        {
+            Post post = await _postRepository.GetAsync(id);
+            Comment comment = CommentService.MapComment(commentDTO);
+            post.Comments.Add(comment);
+
+            await _postRepository.UpdateAsync(post);
         }
     }
 }

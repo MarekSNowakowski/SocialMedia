@@ -62,6 +62,8 @@ namespace SocialMedia.Infrastructure.Repositories
 
                 z.Title = s.Title;
                 z.PhotoPath = s.PhotoPath;
+                z.UpvotedUsers = s.UpvotedUsers;
+                z.Comments = s.Comments;
 
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
