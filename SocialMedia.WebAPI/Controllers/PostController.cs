@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SocialMedia.Infrastructure.Commands;
+using SocialMedia.Infrastructure.DTO;
 using SocialMedia.Infrastructure.Services;
 using System.Threading.Tasks;
 
@@ -52,6 +53,20 @@ namespace SocialMedia.WebAPI.Controllers
         public async Task<IActionResult> DeletePost(int id)
         {
             await _postRepository.DeletePostAsync(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpvotePost(int id, [FromBody] UserDataDTO userDataDTO)
+        {
+            await _postRepository.UpVotePostAsync(id, userDataDTO);
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> CommentPost(int id, [FromBody] CommentDTO commentDTO)
+        {
+            await _postRepository.AddCommentToPostAsync(id, commentDTO);
             return NoContent();
         }
     }
