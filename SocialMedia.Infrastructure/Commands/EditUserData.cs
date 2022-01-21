@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SocialMedia.Infrastructure.Commands
 {
-    public class CreateUserData
+    public class EditUserData
     {
         public string Username { get; set; }
         public string Email { get; set; }

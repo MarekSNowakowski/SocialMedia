@@ -10,7 +10,6 @@ namespace SocialMedia.Core.Domain
         public DateTime Time { get; set; }
         public string PhotoPath { get; set; }
         public UserData Author { get; set; }
-        public List<UserData> UpvotedUsers { get; set; }
         public List<Comment> Comments { get; set; }
     }
 }

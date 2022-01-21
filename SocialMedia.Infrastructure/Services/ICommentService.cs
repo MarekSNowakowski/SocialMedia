@@ -9,8 +9,8 @@ namespace SocialMedia.Infrastructure.Services
     {
         Task<IEnumerable<CommentDTO>> BrowseAllAsync();
         Task<CommentDTO> GetCommentAsync(int id);
-        Task AddCommentAsync(CreateComment post);
-        Task EditCommentAsync(int id, CreateComment post);
+        Task AddCommentAsync(CreateComment comment);
+        Task EditCommentAsync(int id, EditComment comment);
         Task DeleteCommentAsync(int id);
     }
 }

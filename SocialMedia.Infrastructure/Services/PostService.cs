@@ -13,13 +13,15 @@ namespace SocialMedia.Infrastructure.Services
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
+        private readonly IUserDataRepository _userDataRepository;
 
-        public PostService(IPostRepository postRepository)
+        public PostService(IPostRepository postRepository, IUserDataRepository userDataRepository)
         {
             _postRepository = postRepository;
+            _userDataRepository = userDataRepository;
         }
 
-        public static IEnumerable<PostDTO> MapPosts(IEnumerable<Post> posts)
+        private IEnumerable<PostDTO> MapPosts(IEnumerable<Post> posts)
         {
             return posts.Select(x => new PostDTO()
             {
@@ -28,12 +30,11 @@ namespace SocialMedia.Infrastructure.Services
                 Time = x.Time,
                 PhotoPath = x.PhotoPath,
                 Author = x.Author,
-                UpvotedUsers = x.UpvotedUsers,
-                Comments = x.Comments
+                Comments = CommentService.MapComments(x.Comments).ToList()
             });
         }
 
-        public static PostDTO MapPost(Post post)
+        private PostDTO MapPost(Post post)
         {
             return new PostDTO()
             {
@@ -42,8 +43,7 @@ namespace SocialMedia.Infrastructure.Services
                 Time = post.Time,
                 PhotoPath = post.PhotoPath,
                 Author = post.Author,
-                UpvotedUsers = post.UpvotedUsers,
-                Comments = post.Comments
+                Comments = CommentService.MapComments(post.Comments).ToList()
             };
         }
 
@@ -71,9 +71,8 @@ namespace SocialMedia.Infrastructure.Services
             {
                 Title = post.Title,
                 PhotoPath = post.PhotoPath,
-                Author = post.Author,
+                Author = await _userDataRepository.GetAsync(post.AuthorID),
                 Time = DateTime.Now,
-                UpvotedUsers = new List<UserData>(),
                 Comments = new List<Comment>()
             };
 
@@ -85,31 +84,13 @@ namespace SocialMedia.Infrastructure.Services
             await _postRepository.DelAsync(id);
         }
 
-        public async Task EditPostAsync(int id, CreatePost post)
+        public async Task EditPostAsync(int id, EditPost post)
         {
             Post updatePost = await _postRepository.GetAsync(id);
             updatePost.Title = post.Title;
             updatePost.PhotoPath = post.PhotoPath;
 
             await _postRepository.UpdateAsync(updatePost);
-        }
-
-        public async Task UpVotePostAsync(int id, UserDataDTO userDataDTO)
-        {
-            Post post = await _postRepository.GetAsync(id);
-            UserData userData = UserDataService.MapUserData(userDataDTO);
-            post.UpvotedUsers.Add(userData);
-
-            await _postRepository.UpdateAsync(post);
-        }
-
-        public async Task AddCommentToPostAsync(int id, CommentDTO commentDTO)
-        {
-            Post post = await _postRepository.GetAsync(id);
-            Comment comment = CommentService.MapComment(commentDTO);
-            post.Comments.Add(comment);
-
-            await _postRepository.UpdateAsync(post);
         }
     }
 }

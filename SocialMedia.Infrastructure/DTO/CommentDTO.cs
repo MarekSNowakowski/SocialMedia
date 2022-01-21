@@ -7,7 +7,7 @@ namespace SocialMedia.Infrastructure.DTO
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public Post Post { get; set; }
+        public int PostId { get; set; }
         public UserData Author { get; set; }
         public DateTime Time { get; set; }
     }

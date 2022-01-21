@@ -1,4 +1,5 @@
 ﻿using SocialMedia.Core.Domain;
+using SocialMedia.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Infrastructure.Repositories
 {
-    public class UserDataRepository
+    public class UserDataRepository : IUserDataRepository
     {
         private readonly AppDbContext _appDbContext;
 
@@ -63,7 +64,6 @@ namespace SocialMedia.Infrastructure.Repositories
                 z.Username = s.Username;
                 z.Email = s.Email;
                 z.Birthday = s.Birthday;
-                z.AvatarPhotoPath = s.AvatarPhotoPath;
 
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;

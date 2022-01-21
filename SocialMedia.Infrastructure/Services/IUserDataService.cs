@@ -9,8 +9,8 @@ namespace SocialMedia.Infrastructure.Services
     {
         Task<IEnumerable<UserDataDTO>> BrowseAllAsync();
         Task<UserDataDTO> GetUserDataAsync(int id);
-        Task AddUserDataAsync(CreateUserData post);
-        Task EditUserDataAsync(int id, CreateUserData post);
+        Task AddUserDataAsync(CreateUserData userData);
+        Task EditUserDataAsync(int id, EditUserData userData);
         Task DeleteUserDataAsync(int id);
     }
 }

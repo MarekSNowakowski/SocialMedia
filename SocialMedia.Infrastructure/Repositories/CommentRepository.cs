@@ -1,4 +1,5 @@
-﻿using SocialMedia.Core.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using SocialMedia.Core.Domain;
 using SocialMedia.Core.Repositories;
 using System;
 using System.Collections.Generic;
@@ -33,14 +34,14 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<IEnumerable<Comment>> BrowseAllAsync()
         {
-            return await Task.FromResult(_appDbContext.Comment);
+            return await Task.FromResult(_appDbContext.Comment.Include(p => p.Author).Include(p => p.Post));
         }
 
         public async Task DelAsync(int id)
         {
             try
             {
-                _appDbContext.Comment.Remove(_appDbContext.Comment.FirstOrDefault(x => x.Id == id));
+                _appDbContext.Comment.Remove(_appDbContext.Comment.Include(p => p.Author).Include(p => p.Post).FirstOrDefault(x => x.Id == id));
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
             }
@@ -52,7 +53,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<Comment> GetAsync(int id)
         {
-            return await Task.FromResult(_appDbContext.Comment.FirstOrDefault(x => x.Id == id));
+            return await Task.FromResult(_appDbContext.Comment.Include(p => p.Author).Include(p => p.Post).FirstOrDefault(x => x.Id == id));
         }
 
         public async Task UpdateAsync(Comment s)

@@ -1,12 +1,12 @@
-﻿using SocialMedia.Core.Domain;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SocialMedia.Infrastructure.Commands
 {
-    public class CreatePost
+    public class EditPost
     {
         public string Title { get; set; }
         public string PhotoPath { get; set; }
-        public int AuthorID { get; set; }
     }
 }

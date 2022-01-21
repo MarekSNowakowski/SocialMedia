@@ -13,10 +13,14 @@ namespace SocialMedia.Infrastructure.Services
     public class CommentService : ICommentService
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly IPostRepository _postRepository;
+        private readonly IUserDataRepository _userDataRepository;
 
-        public CommentService(ICommentRepository commentRepository)
+        public CommentService(ICommentRepository commentRepository, IPostRepository postRepository, IUserDataRepository userDataRepository)
         {
             _commentRepository = commentRepository;
+            _postRepository = postRepository;
+            _userDataRepository = userDataRepository;
         }
 
         public static IEnumerable<CommentDTO> MapComments(IEnumerable<Comment> comments)
@@ -25,35 +29,24 @@ namespace SocialMedia.Infrastructure.Services
             {
                 Id = x.Id,
                 Content = x.Content,
-                Post = x.Post,
+                PostId = x.Post.Id,
                 Time = x.Time,
                 Author = x.Author
             });
         }
 
-        public static CommentDTO MapComment(Comment comment)
+        private CommentDTO MapComment(Comment comment)
         {
             return new CommentDTO()
             {
                 Id = comment.Id,
                 Content = comment.Content,
-                Post = comment.Post,
+                PostId = comment.Post.Id,
                 Time = comment.Time,
                 Author = comment.Author
             };
         }
 
-        public static Comment MapComment(CommentDTO comment)
-        {
-            return new Comment()
-            {
-                Id = comment.Id,
-                Content = comment.Content,
-                Post = comment.Post,
-                Time = comment.Time,
-                Author = comment.Author
-            };
-        }
         public async Task<IEnumerable<CommentDTO>> BrowseAllAsync()
         {
             var z = await _commentRepository.BrowseAllAsync();
@@ -77,8 +70,8 @@ namespace SocialMedia.Infrastructure.Services
             Comment newComment = new Comment()
             {
                 Content = comment.Content,
-                Post = comment.Post,
-                Author = comment.Author,
+                Post = await _postRepository.GetAsync(comment.PostID),
+                Author = await _userDataRepository.GetAsync(comment.AuthorID),
                 Time = DateTime.Now
             };
 
@@ -90,7 +83,7 @@ namespace SocialMedia.Infrastructure.Services
             await _commentRepository.DelAsync(id);
         }
 
-        public async Task EditCommentAsync(int id, CreateComment comment)
+        public async Task EditCommentAsync(int id, EditComment comment)
         {
             Comment updateComment = await _commentRepository.GetAsync(id);
             updateComment.Content = comment.Content;

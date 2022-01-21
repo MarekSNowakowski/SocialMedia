@@ -19,7 +19,7 @@ namespace SocialMedia.Infrastructure.Services
             _userDataRepository = userDataRepository;
         }
 
-        public static IEnumerable<UserDataDTO> MapUserData(IEnumerable<UserData> userData)
+        private IEnumerable<UserDataDTO> MapUserData(IEnumerable<UserData> userData)
         {
             return userData.Select(x => new UserDataDTO()
             {
@@ -31,21 +31,9 @@ namespace SocialMedia.Infrastructure.Services
             });
         }
 
-        public static UserDataDTO MapUserData(UserData userData)
+        private UserDataDTO MapUserData(UserData userData)
         {
             return new UserDataDTO()
-            {
-                Id = userData.Id,
-                Username = userData.Username,
-                Email = userData.Email,
-                Birthday = userData.Birthday,
-                RegistrationTime = userData.RegistrationTime
-            };
-        }
-
-        public static UserData MapUserData(UserDataDTO userData)
-        {
-            return new UserData()
             {
                 Id = userData.Id,
                 Username = userData.Username,
@@ -91,7 +79,7 @@ namespace SocialMedia.Infrastructure.Services
             await _userDataRepository.DelAsync(id);
         }
 
-        public async Task EditUserDataAsync(int id, CreateUserData userData)
+        public async Task EditUserDataAsync(int id, EditUserData userData)
         {
             UserData updateUserData = await _userDataRepository.GetAsync(id);
             updateUserData.Username = userData.Username;
