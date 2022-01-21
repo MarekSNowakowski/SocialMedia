@@ -35,13 +35,20 @@ namespace SocialMedia.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUserData([FromBody] CreateUserData userData)
         {
-            await _userDataRepository.AddUserDataAsync(userData);
-            return Created("", userData);  //zwróci 201
+            if(userData != null)
+            {
+                await _userDataRepository.AddUserDataAsync(userData);
+                return Created("", userData);  //zwróci 201
+            }
+            else
+            {
+                return NoContent();
+            }
         }
 
         // put/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditUserData(int id, [FromBody] CreateUserData userData)
+        public async Task<IActionResult> EditUserData(int id, [FromBody] EditUserData userData)
         {
             await _userDataRepository.EditUserDataAsync(id, userData);
             return NoContent();

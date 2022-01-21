@@ -41,7 +41,7 @@ namespace SocialMedia.WebAPI.Controllers
 
         // put/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditComment(int id, [FromBody] CreateComment comment)
+        public async Task<IActionResult> EditComment(int id, [FromBody] EditComment comment)
         {
             await _commentRepository.EditCommentAsync(id, comment);
             return NoContent();
