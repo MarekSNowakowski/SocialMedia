@@ -22,10 +22,13 @@ namespace SocialMedia.WebApp.Models
         [FileExtensions(Extensions = "jpg,png,gif,jpeg,bmp,svg")]
         public IFormFile Photo { get; set; }
 
+        public int AuthorId { get; set; }
+
         //Other properties
         public string PhotoPath { get; set; }
         public int Id { get; set; }
         public DateTime Time { get; set; }
-        public string Author { get; set; }
+        public UserDataVM Author { get; set; }
+        public List<CommentVM> Comments { get; set; }
     }
 }

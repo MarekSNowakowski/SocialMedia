@@ -128,7 +128,7 @@ namespace SocialMedia.WebApp.Controllers
                 return View(ex);
             }
 
-            if(!CheckIfCorrectUser(s.Author))
+            if(!CheckIfCorrectUser(s.Author.Username))
             {
                 return View(new Exception("Post editing try without valid user!"));
             }
@@ -168,8 +168,6 @@ namespace SocialMedia.WebApp.Controllers
             try
             {
                 s.Photo = null;
-                // Set author
-                s.Author = User.Identity.Name;
 
                 using (var httpClient = new HttpClient())
                 {
@@ -217,7 +215,7 @@ namespace SocialMedia.WebApp.Controllers
                             System.IO.File.Delete(filePath);
                         }
 
-                        if (!CheckIfCorrectUser(s.Author))
+                        if (!CheckIfCorrectUser(s.Author.Username))
                         {
                             throw new Exception("Post editing try without valid user!");
                         }
@@ -278,9 +276,9 @@ namespace SocialMedia.WebApp.Controllers
             {
                 s.Photo = null;
                 // Set author
-                s.Author = User.Identity.Name;
+                s.AuthorId = 1; //TBD
 
-                if (s.Author.IsNullOrEmpty())
+                if (!User.Identity.IsAuthenticated)
                 {
                     return View(new Exception("Post creation try without valid user!"));
                 }
@@ -330,6 +328,5 @@ namespace SocialMedia.WebApp.Controllers
         {
             return author == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("Moderator");
         }
-   
     }
 }

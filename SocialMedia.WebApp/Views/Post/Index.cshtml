@@ -35,14 +35,14 @@
         <div class="card mb-5 box-shadow bg-secondary bg-gradient">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-light"> @Html.DisplayFor(modelItem => item.Author) </small>
+                    <small class="text-light"> @Html.DisplayFor(modelItem => item.Author.Username) </small>
                     <small class="text-light"> @dateFormated </small>
                     <div class="btn-group">
                         @if (User.IsInRole("admin") || User.IsInRole("moderator"))@* To modify posts you need to be at least moderator *@
                         {
                             <button type="button" class="btn btn-sm btn-outline-dark">@Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @style = "color: white;" })</button>
                         }
-                        @if (item.Author == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
+                        @if (item.Author.Username == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
                         {
                             <button type="button" class="btn btn-sm btn-outline-dark">@Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @style = "color: white;" })</button>
                         }
