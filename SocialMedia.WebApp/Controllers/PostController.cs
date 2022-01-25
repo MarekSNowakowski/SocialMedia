@@ -128,7 +128,7 @@ namespace SocialMedia.WebApp.Controllers
                 return View(ex);
             }
 
-            if(!CheckIfCorrectUser(s.Author.Username))
+            if (!CheckIfCorrectUser(s.Author.Username))
             {
                 return View(new Exception("Post editing try without valid user!"));
             }
@@ -220,7 +220,7 @@ namespace SocialMedia.WebApp.Controllers
                             throw new Exception("Post editing try without valid user!");
                         }
                     }
-   
+
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
                     using (var response = await httpClient.DeleteAsync($"{_restpath}/{id}"))
                     {
@@ -360,6 +360,57 @@ namespace SocialMedia.WebApp.Controllers
             }
 
             return id;    //view is strongly typed
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment(IFormCollection formFields)
+        {
+            string comment = formFields["comment"];
+            string id_str = formFields["postid"];
+            int id = int.Parse(id_str);
+
+            if (string.IsNullOrEmpty(comment))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            CommentVM result;
+
+            CommentVM commentVM = new CommentVM()
+            {
+                Content = comment,
+                AuthorId = await GetUserId(),
+                PostId = id,
+                Time = DateTime.Now
+            };
+
+            var tokenString = GenerateJSONWebToken();
+            string _restpath = GetHostUrl().Content + "comment";
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    string jsonString = System.Text.Json.JsonSerializer.Serialize(commentVM);
+                    var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.PostAsync($"{_restpath}", content))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        result = JsonConvert.DeserializeObject<CommentVM>(apiResponse);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Adding comment failed!");
+                return View(ex);
+            }
+
+            _logger.LogInformation($"Creating comment: \"{result.Content}\" succeded!");
+            return RedirectToAction(nameof(Index));
         }
     }
 }
