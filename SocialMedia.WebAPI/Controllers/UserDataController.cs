@@ -61,6 +61,13 @@ namespace SocialMedia.WebAPI.Controllers
             await _userDataRepository.DeleteUserDataAsync(id);
             return NoContent();
         }
+
+        [HttpGet("id/{username}")]
+        public async Task<int> GetUserId(string username)
+        {
+            int id = await _userDataRepository.GetUserId(username);
+            return id;
+        }
     }
 }
 

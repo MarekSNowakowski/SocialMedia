@@ -276,11 +276,16 @@ namespace SocialMedia.WebApp.Controllers
             {
                 s.Photo = null;
                 // Set author
-                s.AuthorId = 1; //TBD
+                s.AuthorId = await GetUserId();
 
                 if (!User.Identity.IsAuthenticated)
                 {
                     return View(new Exception("Post creation try without valid user!"));
+                }
+
+                if (s.AuthorId == -1)
+                {
+                    return View(new Exception("User not found!"));
                 }
 
                 using (var httpClient = new HttpClient())
@@ -327,6 +332,34 @@ namespace SocialMedia.WebApp.Controllers
         private bool CheckIfCorrectUser(string author)
         {
             return author == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("Moderator");
+        }
+
+        private async Task<int> GetUserId()
+        {
+            var tokenString = GenerateJSONWebToken();
+
+            string _restpath = GetHostUrl().Content + "userdata/id/" + User.Identity.Name;
+
+            int id = -1;
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync(_restpath))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        id = int.Parse(apiResponse);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Getting user id failed! Username: {User.Identity.Name}, Exception: {ex.Message}");
+            }
+
+            return id;    //view is strongly typed
         }
     }
 }

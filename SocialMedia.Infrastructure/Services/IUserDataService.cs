@@ -12,5 +12,6 @@ namespace SocialMedia.Infrastructure.Services
         Task AddUserDataAsync(CreateUserData userData);
         Task EditUserDataAsync(int id, EditUserData userData);
         Task DeleteUserDataAsync(int id);
+        Task<int> GetUserId(string username);
     }
 }

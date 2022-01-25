@@ -1,4 +1,4 @@
-﻿@model Zawodnicy.WebApp.Models.LoginVM
+﻿@model SocialMedia.WebApp.Models.LoginVM
 
 <h3>
     Zarejestruj konto w systemie</br>
@@ -13,10 +13,25 @@
 
     <div class="form-group">
         <label asp-for="UserName" class="col-md-2 control-label"></label>
-
         <div class="col-md-10">
             <input asp-for="UserName" class="form-control" />
             <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Birthday" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Birthday" class="form-control" data-val="true" value="2000-01-01" />
+            <span asp-validation-for="Birthday" class="text-danger"></span>
         </div>
     </div>
 

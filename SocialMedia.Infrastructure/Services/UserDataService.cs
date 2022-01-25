@@ -88,5 +88,16 @@ namespace SocialMedia.Infrastructure.Services
 
             await _userDataRepository.UpdateAsync(updateUserData);
         }
+
+        public async Task<int> GetUserId(string username)
+        {
+            var users = await _userDataRepository.BrowseAllAsync();
+            var userdata = users.FirstOrDefault(x => x.Username == username);
+
+            if (userdata != null)
+                return userdata.Id;
+            else
+                return -1;
+        }
     }
 }
