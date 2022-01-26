@@ -28,9 +28,12 @@
                             @* Account *@
                             @if (SignInManager.IsSignedIn(User))
                             {
+                                var user = new Dictionary<string, string>
+                                {
+                                    { "username", User.Identity.Name },
+                                };
                                 <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="Index">Konto</a>
-                                    @* Witaj @User.Identity.Name *@
+                                    <a class="nav-link text-light" asp-controller="Account" asp-action="Details" asp-all-route-data="user"> Account </a>
                                 </li>
 
                                 <li class="nav-item">

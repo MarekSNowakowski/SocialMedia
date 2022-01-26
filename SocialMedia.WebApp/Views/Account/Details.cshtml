@@ -1,0 +1,46 @@
+﻿@model SocialMedia.WebApp.Models.UserDataVM
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Username)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Username)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Birthday)
+        </dt>
+        @{ 
+            string dateFormated = Model.Birthday.ToString("d");
+        }
+        <dd class="col-sm-10">
+            @dateFormated
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.RegistrationTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.RegistrationTime)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (Model.Username == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
+    {
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+    }
+</div>

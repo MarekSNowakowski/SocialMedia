@@ -80,7 +80,7 @@ namespace SocialMedia.WebApp.Controllers
 
             string _restpath = GetHostUrl().Content + CN();
 
-            List<PostVM> skiJumpersList = new List<PostVM>();
+            List<PostVM> postList = new List<PostVM>();
 
             try
             {
@@ -90,7 +90,7 @@ namespace SocialMedia.WebApp.Controllers
                     using (var response = await httpClient.GetAsync(_restpath))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
-                        skiJumpersList = JsonConvert.DeserializeObject<List<PostVM>>(apiResponse);
+                        postList = JsonConvert.DeserializeObject<List<PostVM>>(apiResponse);
                     }
                 }
             }
@@ -100,7 +100,7 @@ namespace SocialMedia.WebApp.Controllers
                 return View(ex);
             }
 
-            return View(skiJumpersList);    //view is strongly typed
+            return View(postList);    //view is strongly typed
         }
 
         public async Task<IActionResult> Edit(int id)
