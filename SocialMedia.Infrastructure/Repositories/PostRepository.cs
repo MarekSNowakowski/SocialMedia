@@ -33,7 +33,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<IEnumerable<Post>> BrowseAllAsync()
         {
-            return await Task.FromResult(_appDbContext.Post.Include(p => p.Author).Include(p => p.Comments));
+            return await Task.FromResult(_appDbContext.Post.Include(p => p.Author).Include(p => p.Comments).ThenInclude(p => p.Author));
         }
 
         public async Task DelAsync(int id)
