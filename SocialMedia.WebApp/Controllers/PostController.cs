@@ -412,5 +412,47 @@ namespace SocialMedia.WebApp.Controllers
             _logger.LogInformation($"Creating comment: \"{result.Content}\" succeded!");
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpvotePost(IFormCollection formFields)
+        {
+            string id_str = formFields["postid"];
+            int id = int.Parse(id_str);
+
+            var tokenString = GenerateJSONWebToken();
+            string _restpath = GetHostUrl().Content + "votes/post/" + id;
+            string apiResponse;
+
+            try
+            {
+                string _restpath_user = GetHostUrl().Content + "userdata/" + await GetUserId();
+                UserDataVM userData = new UserDataVM();
+
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync(_restpath_user))
+                    {
+                        apiResponse = await response.Content.ReadAsStringAsync();
+                        userData = JsonConvert.DeserializeObject<UserDataVM>(apiResponse);
+                    }
+                    string jsonString = System.Text.Json.JsonSerializer.Serialize(userData);
+                    var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.PutAsync(_restpath, content))
+                    {
+                        apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Upvoting post failed!");
+                return View(ex);
+            }
+
+            _logger.LogInformation($"Upvoting post: \"{id}\" succeded!");
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

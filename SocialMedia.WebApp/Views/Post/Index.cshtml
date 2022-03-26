@@ -61,7 +61,24 @@
         <big class="card-text">@Html.DisplayFor(modelItem => item.Title)</big>
     </div>
     <img class="card-img-bottom" style="width: 100%; display: block;" src="@photoPath" asp-append-version="true">
+    <div>
 
+            <form asp-action="UpvotePost" asp-controller="Post" method="post" class="form-horizontal" role="form">
+                <div class="form-group m-3 d-flex justify-content-between ">
+                    <input style="display:none;" id="postid" name="postid" value="@item.Id" />
+
+                    <div class="float-right">
+                        @{
+                            var color = "bg-primary";
+                            if (item.Votes.Upvoters.Any(x => x.Username == User.Identity.Name))
+                                color = "bg-success";
+                        }
+                        <input type="submit" class="btn btn-primary @color" value="+ @item.Votes.Count"  />
+                    </div>
+                </div>
+            </form>
+   
+    </div> 
     @*Comments*@
     @foreach (var comment in item.Comments)
     {

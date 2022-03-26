@@ -30,5 +30,6 @@ namespace SocialMedia.WebApp.Models
         public DateTime Time { get; set; }
         public UserDataVM Author { get; set; }
         public List<CommentVM> Comments { get; set; }
+        public VotesVM Votes { get; set; }
     }
 }
