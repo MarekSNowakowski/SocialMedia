@@ -19,7 +19,7 @@ namespace SocialMedia.Infrastructure.Services
             _userDataRepository = userDataRepository;
         }
 
-        private IEnumerable<UserDataDTO> MapUserData(IEnumerable<UserData> userData)
+        public static IEnumerable<UserDataDTO> MapUserData(IEnumerable<UserData> userData)
         {
             return userData.Select(x => new UserDataDTO()
             {
@@ -31,9 +31,21 @@ namespace SocialMedia.Infrastructure.Services
             });
         }
 
-        private UserDataDTO MapUserData(UserData userData)
+        public static UserDataDTO MapUserData(UserData userData)
         {
             return new UserDataDTO()
+            {
+                Id = userData.Id,
+                Username = userData.Username,
+                Email = userData.Email,
+                Birthday = userData.Birthday,
+                RegistrationTime = userData.RegistrationTime
+            };
+        }
+
+        public static UserData MapUserData(UserDataDTO userData)
+        {
+            return new UserData()
             {
                 Id = userData.Id,
                 Username = userData.Username,

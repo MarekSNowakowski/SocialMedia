@@ -35,6 +35,8 @@ namespace SocialMedia.WebAPI
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IUserDataRepository, UserDataRepository>();
             services.AddScoped<IUserDataService, UserDataService>();
+            services.AddScoped<IVotesRepository, VotesRepository>();
+            services.AddScoped<IVotesService, VotesService>();
 
             services.AddDbContext<AppDbContext>(
                 options => options.UseSqlServer(

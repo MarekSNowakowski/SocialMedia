@@ -12,5 +12,6 @@ namespace SocialMedia.Infrastructure.DTO
         public string PhotoPath { get; set; }
         public UserData Author { get; set; }
         public List<CommentDTO> Comments { get; set; }
+        public VotesDTO Votes { get; set; }
     }
 }

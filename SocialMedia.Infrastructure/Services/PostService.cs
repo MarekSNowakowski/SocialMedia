@@ -21,7 +21,7 @@ namespace SocialMedia.Infrastructure.Services
             _userDataRepository = userDataRepository;
         }
 
-        private IEnumerable<PostDTO> MapPosts(IEnumerable<Post> posts)
+        public static IEnumerable<PostDTO> MapPosts(IEnumerable<Post> posts)
         {
             return posts.Select(x => new PostDTO()
             {
@@ -30,11 +30,12 @@ namespace SocialMedia.Infrastructure.Services
                 Time = x.Time,
                 PhotoPath = x.PhotoPath,
                 Author = x.Author,
-                Comments = CommentService.MapComments(x.Comments).ToList()
+                Comments = CommentService.MapComments(x.Comments).ToList(),
+                Votes = VotesService.MapVotes(x.Votes)
             });
         }
 
-        private PostDTO MapPost(Post post)
+        public static PostDTO MapPost(Post post)
         {
             return new PostDTO()
             {
@@ -43,7 +44,8 @@ namespace SocialMedia.Infrastructure.Services
                 Time = post.Time,
                 PhotoPath = post.PhotoPath,
                 Author = post.Author,
-                Comments = CommentService.MapComments(post.Comments).ToList()
+                Comments = CommentService.MapComments(post.Comments).ToList(),
+                Votes = VotesService.MapVotes(post.Votes)
             };
         }
 
