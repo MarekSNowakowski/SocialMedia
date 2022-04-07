@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SocialMedia.Infrastructure.Commands;
+using SocialMedia.Infrastructure.DTO;
 using SocialMedia.Infrastructure.Services;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SocialMedia.WebAPI.Controllers
@@ -35,8 +37,8 @@ namespace SocialMedia.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPost([FromBody] CreatePost post)
         {
-            await _postRepository.AddPostAsync(post);
-            return Created("", post);  //zwróci 201
+            int id = await _postRepository.AddPostAsync(post);
+            return Created("", id);  //zwróci 201
         }
 
         // put/{id}

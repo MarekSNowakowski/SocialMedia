@@ -23,9 +23,9 @@ namespace SocialMedia.Infrastructure.Services
             _userDataRepository = userDataRepository;
         }
 
-        public static IEnumerable<VotesDTO> MapVotes(IEnumerable<Votes> comments)
+        public static IEnumerable<VotesDTO> MapVotes(IEnumerable<Votes> votes)
         {
-            return comments.Select(x => new VotesDTO()
+            return votes.Select(x => new VotesDTO()
             {
                 Id = x.Id,
                 PostId = x.Post.Id,

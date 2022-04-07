@@ -9,7 +9,7 @@ namespace SocialMedia.Infrastructure.Services
     {
         Task<IEnumerable<PostDTO>> BrowseAllAsync();
         Task<PostDTO> GetPostAsync(int id);
-        Task AddPostAsync(CreatePost post);
+        Task<int> AddPostAsync(CreatePost post);
         Task EditPostAsync(int id, EditPost post);
         Task DeletePostAsync(int id);
     }

@@ -67,7 +67,7 @@ namespace SocialMedia.Infrastructure.Services
                 return null;
         }
 
-        public async Task AddPostAsync(CreatePost post)
+        public async Task<int> AddPostAsync(CreatePost post)
         {
             Post newPost = new Post()
             {
@@ -79,6 +79,7 @@ namespace SocialMedia.Infrastructure.Services
             };
 
             await _postRepository.AddAsync(newPost);
+            return _postRepository.BrowseAllAsync().Result.FirstOrDefault(e=>e.Title == post.Title && e.Author.Id == post.AuthorID).Id;
         }
 
         public async Task DeletePostAsync(int id)

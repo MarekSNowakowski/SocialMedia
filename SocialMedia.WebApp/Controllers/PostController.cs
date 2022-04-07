@@ -226,6 +226,11 @@ namespace SocialMedia.WebApp.Controllers
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
+                    string _votes_restpath = GetHostUrl().Content + "votes/post/" + id;
+                    using (var response = await httpClient.PostAsync($"{_votes_restpath}", null))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
                 }
             }
             catch (Exception ex)
@@ -251,7 +256,7 @@ namespace SocialMedia.WebApp.Controllers
 
             string _restpath = GetHostUrl().Content + CN();
 
-            PostVM result = new PostVM();
+            int resultID;
 
             if (s.Photo != null)
             {
@@ -297,7 +302,12 @@ namespace SocialMedia.WebApp.Controllers
                     using (var response = await httpClient.PostAsync($"{_restpath}", content))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
-                        result = JsonConvert.DeserializeObject<PostVM>(apiResponse);
+                        resultID = JsonConvert.DeserializeObject<int>(apiResponse);
+                    }
+                    string _votes_restpath = GetHostUrl().Content + "votes/post/" + resultID;
+                    using (var response = await httpClient.PostAsync($"{_votes_restpath}", null))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
                     }
                 }
 
@@ -308,7 +318,7 @@ namespace SocialMedia.WebApp.Controllers
                 return View(ex);
             }
 
-            _logger.LogInformation($"Creating post with title: {result.Title} succeded!");
+            _logger.LogInformation($"Creating post with ID: {resultID} succeded!");
             return RedirectToAction(nameof(Index));
         }
         private string ProcessUploadedFile(IFormFile Photo)

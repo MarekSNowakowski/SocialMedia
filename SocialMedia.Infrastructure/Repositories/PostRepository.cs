@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SocialMedia.Core.Domain;
 using SocialMedia.Core.Repositories;
 using System;
@@ -55,7 +56,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<Post> GetAsync(int id)
         {
-            return await Task.FromResult(_appDbContext.Post.Include(p=> p.Author).Include(p => p.Votes).ThenInclude(p => p.Upvoters).Include(p=>p.Comments).FirstOrDefault(x => x.Id == id));
+            return await Task.FromResult(_appDbContext.Post.Include(p=> p.Author).Include(p => p.Votes).ThenInclude(p => p.Upvoters).Include(p=>p.Comments).ThenInclude(p => p.Author).FirstOrDefault(x => x.Id == id));
         }
 
         public async Task UpdateAsync(Post s)
