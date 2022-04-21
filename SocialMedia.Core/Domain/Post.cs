@@ -12,5 +12,6 @@ namespace SocialMedia.Core.Domain
         public UserData Author { get; set; }
         public List<Comment> Comments { get; set; }
         public Votes Votes { get; set; }
+        public Reports Reports { get; set; }
     }
 }
