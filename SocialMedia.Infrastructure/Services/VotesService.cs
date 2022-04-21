@@ -14,13 +14,11 @@ namespace SocialMedia.Infrastructure.Services
     {
         private readonly IVotesRepository _votesRepository;
         private readonly IPostRepository _postRepository;
-        private readonly IUserDataRepository _userDataRepository;
 
-        public VotesService(IVotesRepository votesRepository, IPostRepository postRepository, IUserDataRepository userDataRepository)
+        public VotesService(IVotesRepository votesRepository, IPostRepository postRepository)
         {
             _votesRepository = votesRepository;
             _postRepository = postRepository;
-            _userDataRepository = userDataRepository;
         }
 
         public static IEnumerable<VotesDTO> MapVotes(IEnumerable<Votes> votes)

@@ -16,11 +16,17 @@ namespace SocialMedia.Infrastructure.Repositories
         public DbSet<Comment> Comment { get; set; }
         public DbSet<UserData> UserData { get; set; }
         public DbSet<Votes> Votes { get; set; }
+        public DbSet<Reports> Reports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Post>()
                 .HasOne(b => b.Votes)
+                .WithOne(i => i.Post)
+                .HasForeignKey<Votes>(b => b.PostId);
+
+            modelBuilder.Entity<Post>()
+                .HasOne(b => b.Reports)
                 .WithOne(i => i.Post)
                 .HasForeignKey<Votes>(b => b.PostId);
 
