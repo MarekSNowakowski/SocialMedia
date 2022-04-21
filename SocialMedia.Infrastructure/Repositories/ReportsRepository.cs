@@ -57,7 +57,7 @@ namespace SocialMedia.Infrastructure.Repositories
         {
             try
             {
-                _appDbContext.Votes.Remove(_appDbContext.Votes.Include(p => p.Post).FirstOrDefault(x => x.Post.Id == postId));
+                _appDbContext.Reports.Remove(_appDbContext.Reports.Include(p => p.Post).FirstOrDefault(x => x.Post.Id == postId));
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
             }
@@ -81,9 +81,9 @@ namespace SocialMedia.Infrastructure.Repositories
         {
             try
             {
-                var z = _appDbContext.Reports.Include(p => p.Post).Include(p => p.Reporters).FirstOrDefault(x => x.PostId == postId);
+                var z = _appDbContext.Reports.Include(p => p.Reporters).FirstOrDefault(x => x.PostId == postId);
 
-                if (z.Reporters != null && z.Reporters.Count > 0)
+                if (z.Reporters != null)
                 {
                     if (z.Reporters.Exists(z => z.Id == userData.Id))
                     {
@@ -96,11 +96,13 @@ namespace SocialMedia.Infrastructure.Repositories
                 }
                 else
                 {
-                    z.Reporters = new List<UserData>();
-                    z.Reporters.Add(userData);
+                    z.Reporters = new List<UserData>
+                    {
+                        userData
+                    };
                 }
 
-                _appDbContext.SaveChanges();
+                await _appDbContext.SaveChangesAsync();
                 await Task.CompletedTask;
             }
             catch (Exception ex)
