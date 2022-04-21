@@ -33,12 +33,21 @@ namespace SocialMedia.Infrastructure.Services
 
         public static VotesDTO MapVotes(Votes x)
         {
-            return new VotesDTO()
+            VotesDTO votes = new VotesDTO()
             {
-                Id = x.Id,
-                PostId = x.Post.Id,
-                Upvoters = x.Upvoters
+                Id = -1,
+                PostId = -1,
+                Upvoters = null
             };
+
+            if(x != null)
+            {
+                votes.Id = x.Id;
+                votes.PostId = x.Post.Id;
+                votes.Upvoters = x.Upvoters;
+            }
+
+            return votes;
         }
 
         public async Task<IEnumerable<VotesDTO>> BrowseAllAsync()
@@ -70,13 +79,24 @@ namespace SocialMedia.Infrastructure.Services
 
         public async Task AddVotesAsync(int postId)
         {
-            Votes newVote = new Votes()
+            try
             {
-                Post = await _postRepository.GetAsync(postId),
-                Upvoters = new List<UserData>()
-            };
+                var post = await _postRepository.GetAsync(postId);
+                if (post == null) throw new NullReferenceException();
 
-            await _votesRepository.AddAsync(newVote);
+                Votes newVote = new Votes()
+                {
+                    Post = post,
+                    PostId = postId,
+                    Upvoters = new List<UserData>()
+                };
+
+                await _votesRepository.AddAsync(newVote);
+            }
+            catch (Exception ex)
+            {
+                await Task.FromException(ex);
+            }
         }
 
         public async Task UpvotePostAsync(int postId, UserDataDTO userData)

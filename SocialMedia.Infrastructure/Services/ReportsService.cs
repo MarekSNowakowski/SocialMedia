@@ -33,12 +33,21 @@ namespace SocialMedia.Infrastructure.Services
 
         public static ReportsDTO MapReports(Reports x)
         {
-            return new ReportsDTO()
+            ReportsDTO reports = new ReportsDTO()
             {
-                Id = x.Id,
-                PostId = x.Post.Id,
-                Reporters = x.Reporters
+                Id = -1,
+                PostId = -1,
+                Reporters = null
             };
+
+            if (x != null)
+            {
+                reports.Id = x.Id;
+                reports.PostId = x.Post.Id;
+                reports.Reporters = x.Reporters;
+            }
+
+            return reports;
         }
 
         public async Task<IEnumerable<ReportsDTO>> BrowseAllAsync()
@@ -61,13 +70,24 @@ namespace SocialMedia.Infrastructure.Services
 
         public async Task AddReportsAsync(int postId)
         {
-            Reports newReports = new Reports()
+            try
             {
-                Post = await _postRepository.GetAsync(postId),
-                Reporters = new List<UserData>()
-            };
+                var post = await _postRepository.GetAsync(postId);
+                if (post == null) throw new NullReferenceException();
 
-            await _reportsRepository.AddAsync(newReports);
+                Reports newReports = new Reports()
+                {
+                    Post = post,
+                    PostId = postId,
+                    Reporters = new List<UserData>()
+                };
+
+                await _reportsRepository.AddAsync(newReports);
+            }
+            catch (Exception ex)
+            {
+                await Task.FromException(ex);
+            }
         }
 
         public async Task ReportPostAsync(int postId, UserDataDTO userData)

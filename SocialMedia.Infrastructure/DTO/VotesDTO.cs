@@ -13,6 +13,9 @@ namespace SocialMedia.Infrastructure.DTO
         {
             get
             {
+                if (Upvoters == null)
+                    return -1;
+
                 return Upvoters.Count; 
             } 
         }

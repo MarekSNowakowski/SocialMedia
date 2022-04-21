@@ -31,7 +31,8 @@ namespace SocialMedia.Infrastructure.Services
                 PhotoPath = x.PhotoPath,
                 Author = x.Author,
                 Comments = CommentService.MapComments(x.Comments).ToList(),
-                Votes = VotesService.MapVotes(x.Votes)
+                Votes = VotesService.MapVotes(x.Votes),
+                Reports = ReportsService.MapReports(x.Reports)
             });
         }
 
@@ -45,7 +46,8 @@ namespace SocialMedia.Infrastructure.Services
                 PhotoPath = post.PhotoPath,
                 Author = post.Author,
                 Comments = CommentService.MapComments(post.Comments).ToList(),
-                Votes = VotesService.MapVotes(post.Votes)
+                Votes = VotesService.MapVotes(post.Votes),
+                Reports = ReportsService.MapReports(post.Reports)
             };
         }
 

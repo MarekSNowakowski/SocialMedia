@@ -12,6 +12,9 @@ namespace SocialMedia.Infrastructure.DTO
         {
             get
             {
+                if (Reporters == null)
+                    return -1;
+
                 return Reporters.Count; 
             } 
         }

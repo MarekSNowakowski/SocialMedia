@@ -28,7 +28,7 @@ namespace SocialMedia.Infrastructure.Repositories
             modelBuilder.Entity<Post>()
                 .HasOne(b => b.Reports)
                 .WithOne(i => i.Post)
-                .HasForeignKey<Votes>(b => b.PostId);
+                .HasForeignKey<Reports>(b => b.PostId);
 
             base.OnModelCreating(modelBuilder);
         }

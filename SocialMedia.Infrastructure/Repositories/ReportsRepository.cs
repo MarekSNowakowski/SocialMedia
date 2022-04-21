@@ -23,7 +23,7 @@ namespace SocialMedia.Infrastructure.Repositories
             {
                 try
                 {
-                    _appDbContext.Reports.Add(v);
+                    _appDbContext.Reports.Add(r);
                     _appDbContext.SaveChanges();
                     await Task.CompletedTask;
                 }

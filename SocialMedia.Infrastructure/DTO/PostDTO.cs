@@ -13,5 +13,6 @@ namespace SocialMedia.Infrastructure.DTO
         public UserData Author { get; set; }
         public List<CommentDTO> Comments { get; set; }
         public VotesDTO Votes { get; set; }
+        public ReportsDTO Reports { get; set; }
     }
 }

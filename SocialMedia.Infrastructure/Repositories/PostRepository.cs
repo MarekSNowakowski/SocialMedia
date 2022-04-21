@@ -34,7 +34,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<IEnumerable<Post>> BrowseAllAsync()
         {
-            return await Task.FromResult(_appDbContext.Post.Include(p => p.Author).Include(p => p.Votes).ThenInclude(p => p.Upvoters).Include(p => p.Comments).ThenInclude(p => p.Author));
+            return await Task.FromResult(_appDbContext.Post.Include(p => p.Author).Include(p => p.Votes).ThenInclude(p => p.Upvoters).Include(p => p.Comments).ThenInclude(p => p.Author).Include(p => p.Reports).ThenInclude(p => p.Reporters));
         }
 
         public async Task DelAsync(int id)
@@ -56,7 +56,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<Post> GetAsync(int id)
         {
-            return await Task.FromResult(_appDbContext.Post.Include(p=> p.Author).Include(p => p.Votes).ThenInclude(p => p.Upvoters).Include(p=>p.Comments).ThenInclude(p => p.Author).FirstOrDefault(x => x.Id == id));
+            return await Task.FromResult(_appDbContext.Post.Include(p=> p.Author).Include(p => p.Votes).ThenInclude(p => p.Upvoters).Include(p=>p.Comments).ThenInclude(p => p.Author).Include(p => p.Reports).ThenInclude(p => p.Reporters).FirstOrDefault(x => x.Id == id));
         }
 
         public async Task UpdateAsync(Post s)
