@@ -220,14 +220,14 @@ namespace SocialMedia.WebApp.Controllers
                             throw new Exception("Post editing try without valid user!");
                         }
                     }
-
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                    using (var response = await httpClient.DeleteAsync($"{_restpath}/{id}"))
+                    string _votes_restpath = GetHostUrl().Content + "votes/post/" + id;
+                    using (var response = await httpClient.PostAsync($"{_votes_restpath}", null))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
-                    string _votes_restpath = GetHostUrl().Content + "votes/post/" + id;
-                    using (var response = await httpClient.PostAsync($"{_votes_restpath}", null))
+
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.DeleteAsync($"{_restpath}/{id}"))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
