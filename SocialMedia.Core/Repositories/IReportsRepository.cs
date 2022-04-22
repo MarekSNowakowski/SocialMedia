@@ -11,6 +11,7 @@ namespace SocialMedia.Core.Repositories
         public Task<Reports> GetPostReports(int postId);
         public Task AddAsync(Reports r);
         public Task DelAsync(int id);
+        public Task DelPostReport(int postId, int userId);
         public Task DelPostReports(int postId);
     }
 }

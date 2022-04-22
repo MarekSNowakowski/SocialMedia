@@ -107,6 +107,11 @@ namespace SocialMedia.Infrastructure.Services
             await _votesRepository.DelPostVotes(postId);
         }
 
+        public async Task DeletePostVoteAsync(int postId, int userId)
+        {
+            await _votesRepository.DelPostVote(postId, userId);
+        }
+
         public async Task DeleteVotesAsync(int id)
         {
             await _votesRepository.DelAsync(id);

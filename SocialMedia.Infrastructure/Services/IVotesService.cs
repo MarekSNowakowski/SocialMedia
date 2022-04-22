@@ -12,6 +12,7 @@ namespace SocialMedia.Infrastructure.Services
         Task<VotesDTO> GetPostsVotesAsync(int postId);
         Task AddVotesAsync(int postId, int userId);
         Task DeleteVotesAsync(int id);
+        Task DeletePostVoteAsync(int postId, int userId);
         Task DeletePostVotesAsync(int postId);
     }
 }

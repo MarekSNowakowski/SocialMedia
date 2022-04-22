@@ -67,6 +67,20 @@ namespace SocialMedia.Infrastructure.Repositories
             }
         }
 
+        public async Task DelPostReport(int postId, int userId)
+        {
+            try
+            {
+                _appDbContext.Reports.Remove(_appDbContext.Reports.Include(p => p.Post).Include(p => p.Reporter).FirstOrDefault(x => x.Post.Id == postId && x.Reporter.Id == userId));
+                _appDbContext.SaveChanges();
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                await Task.FromException(ex);
+            }
+        }
+
         public async Task<Reports> GetAsyncById(int id)
         {
             return await Task.FromResult(_appDbContext.Reports.Include(p => p.Post).Include(p => p.Reporter).FirstOrDefault(x => x.Id == id));

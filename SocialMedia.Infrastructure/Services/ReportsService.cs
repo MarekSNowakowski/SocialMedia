@@ -101,6 +101,11 @@ namespace SocialMedia.Infrastructure.Services
             await _reportsRepository.DelAsync(id);
         }
 
+        public async Task DeletePostReportAsync(int postId, int userId)
+        {
+            await _reportsRepository.DelPostReport(postId, userId);
+        }
+
         public async Task<ReportsDTO> GetPostsReportsAsync(int postId)
         {
             Reports r = await _reportsRepository.GetPostReports(postId);

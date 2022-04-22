@@ -55,6 +55,14 @@ namespace SocialMedia.WebAPI.Controllers
         }
 
         // votes/post/{id}
+        [HttpDelete("post/{postId}/user/{userID}")]
+        public async Task<IActionResult> DeletePostVote(int postId, int userId)
+        {
+            await _votesRepository.DeletePostVoteAsync(postId, userId);
+            return NoContent();
+        }
+
+        // votes/post/{id}
         [HttpDelete("post/{id}")]
         public async Task<IActionResult> DeletePostVotes(int id)
         {

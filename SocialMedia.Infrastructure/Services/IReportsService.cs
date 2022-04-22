@@ -12,6 +12,7 @@ namespace SocialMedia.Infrastructure.Services
         Task<ReportsDTO> GetPostsReportsAsync(int postId);
         Task AddReportsAsync(int postId, int userId);
         Task DeleteReportsAsync(int id);
+        Task DeletePostReportAsync(int postId, int userId);
         Task DeletePostReportsAsync(int postId);
     }
 }

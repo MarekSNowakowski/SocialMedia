@@ -67,6 +67,20 @@ namespace SocialMedia.Infrastructure.Repositories
             }
         }
 
+        public async Task DelPostVote(int postId, int userId)
+        {
+            try
+            {
+                _appDbContext.Votes.Remove(_appDbContext.Votes.Include(p => p.Post).Include(p => p.Upvoter).FirstOrDefault(x => x.Post.Id == postId && x.Upvoter.Id == userId));
+                _appDbContext.SaveChanges();
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                await Task.FromException(ex);
+            }
+        }
+
         public async Task<Votes> GetAsyncById(int id)
         {
             return await Task.FromResult(_appDbContext.Votes.Include(p => p.Post).Include(p => p.Upvoter).FirstOrDefault(x => x.Id == id));
