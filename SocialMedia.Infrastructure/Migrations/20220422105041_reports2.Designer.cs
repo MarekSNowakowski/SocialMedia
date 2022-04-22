@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SocialMedia.Infrastructure.Repositories;
 
 namespace SocialMedia.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220422105041_reports2")]
+    partial class reports2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,7 +312,12 @@ namespace SocialMedia.Infrastructure.Migrations
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("VotesId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("VotesId");
 
                     b.ToTable("UserData");
                 });
@@ -322,17 +329,13 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UpvoterId")
+                    b.Property<int>("PostId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UpvoterId");
+                    b.HasIndex("PostId")
+                        .IsUnique();
 
                     b.ToTable("Votes");
                 });
@@ -417,15 +420,20 @@ namespace SocialMedia.Infrastructure.Migrations
                         .HasForeignKey("ReporterId");
                 });
 
+            modelBuilder.Entity("SocialMedia.Core.Domain.UserData", b =>
+                {
+                    b.HasOne("SocialMedia.Core.Domain.Votes", null)
+                        .WithMany("Upvoters")
+                        .HasForeignKey("VotesId");
+                });
+
             modelBuilder.Entity("SocialMedia.Core.Domain.Votes", b =>
                 {
                     b.HasOne("SocialMedia.Core.Domain.Post", "Post")
-                        .WithMany("Votes")
-                        .HasForeignKey("PostId");
-
-                    b.HasOne("SocialMedia.Core.Domain.UserData", "Upvoter")
-                        .WithMany()
-                        .HasForeignKey("UpvoterId");
+                        .WithOne("Votes")
+                        .HasForeignKey("SocialMedia.Core.Domain.Votes", "PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -1,23 +1,9 @@
-﻿using SocialMedia.Core.Domain;
-using System;
-using System.Collections.Generic;
-
-namespace SocialMedia.Infrastructure.DTO
+﻿namespace SocialMedia.Infrastructure.DTO
 {
     public class VotesDTO
     {
         public int Id { get; set; }
         public int PostId { get; set; } 
-        public List<UserData> Upvoters { get; set; }
-        public int Count 
-        {
-            get
-            {
-                if (Upvoters == null)
-                    return -1;
-
-                return Upvoters.Count; 
-            } 
-        }
+        public UserDataDTO Upvoter { get; set; }
     }
 }

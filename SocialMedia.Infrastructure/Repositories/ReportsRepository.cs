@@ -19,7 +19,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task AddAsync(Reports r)
         {
-            if (!_appDbContext.Reports.Any(e=> e.PostId == r.PostId))
+            if (!_appDbContext.Reports.Include(x => x.Post).Include(x => x.Reporter).Any(e=> e.Post.Id == r.Post.Id && e.Reporter.Id == r.Reporter.Id))
             {
                 try
                 {
@@ -36,14 +36,14 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<IEnumerable<Reports>> BrowseAllAsync()
         {
-            return await Task.FromResult(_appDbContext.Reports.Include(p => p.Reporters).Include(p => p.Post));
+            return await Task.FromResult(_appDbContext.Reports.Include(p => p.Reporter).Include(p => p.Post));
         }
 
         public async Task DelAsync(int id)
         {
             try
             {
-                _appDbContext.Reports.Remove(_appDbContext.Reports.Include(p => p.Reporters).Include(p => p.Post).FirstOrDefault(x => x.Id == id));
+                _appDbContext.Reports.Remove(_appDbContext.Reports.FirstOrDefault(x => x.Id == id));
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
             }
@@ -57,7 +57,7 @@ namespace SocialMedia.Infrastructure.Repositories
         {
             try
             {
-                _appDbContext.Reports.Remove(_appDbContext.Reports.Include(p => p.Post).FirstOrDefault(x => x.Post.Id == postId));
+                _appDbContext.Reports.RemoveRange(_appDbContext.Reports.Include(p => p.Post).Where(x => x.Post.Id == postId)) ;
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
             }
@@ -69,46 +69,12 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<Reports> GetAsyncById(int id)
         {
-            return await Task.FromResult(_appDbContext.Reports.Include(p => p.Post).Include(p => p.Reporters).FirstOrDefault(x => x.Id == id));
+            return await Task.FromResult(_appDbContext.Reports.Include(p => p.Post).Include(p => p.Reporter).FirstOrDefault(x => x.Id == id));
         }
 
         public async Task<Reports> GetPostReports(int postId)
         {
-            return await Task.FromResult(_appDbContext.Reports.Include(p => p.Post).Include(p => p.Reporters).FirstOrDefault(x => x.Post.Id == postId));
-        }
-
-        public async Task ReportPost(int postId, UserData userData)
-        {
-            try
-            {
-                var z = _appDbContext.Reports.Include(p => p.Reporters).FirstOrDefault(x => x.PostId == postId);
-
-                if (z.Reporters != null)
-                {
-                    if (z.Reporters.Exists(z => z.Id == userData.Id))
-                    {
-                        z.Reporters.Remove(z.Reporters.Find(z => z.Id == userData.Id));
-                    }
-                    else
-                    {
-                        z.Reporters.Add(userData);
-                    }
-                }
-                else
-                {
-                    z.Reporters = new List<UserData>
-                    {
-                        userData
-                    };
-                }
-
-                await _appDbContext.SaveChangesAsync();
-                await Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                await Task.FromException(ex);
-            }
+            return await Task.FromResult(_appDbContext.Reports.Include(p => p.Post).Include(p => p.Reporter).FirstOrDefault(x => x.Post.Id == postId));
         }
     }
 }

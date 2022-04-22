@@ -10,8 +10,7 @@ namespace SocialMedia.Infrastructure.Services
         Task<IEnumerable<VotesDTO>> BrowseAllAsync();
         Task<VotesDTO> GetVotesAsync(int id);
         Task<VotesDTO> GetPostsVotesAsync(int postId);
-        Task AddVotesAsync(int postId);
-        Task UpvotePostAsync(int postId, UserDataDTO userData);
+        Task AddVotesAsync(int postId, int userId);
         Task DeleteVotesAsync(int id);
         Task DeletePostVotesAsync(int postId);
     }

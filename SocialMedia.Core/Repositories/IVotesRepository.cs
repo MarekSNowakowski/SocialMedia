@@ -12,6 +12,5 @@ namespace SocialMedia.Core.Repositories
         public Task AddAsync(Votes v);
         public Task DelAsync(int id);
         public Task DelPostVotes(int postId);
-        public Task UpvotePost(int postId, UserData userData);
     }
 }

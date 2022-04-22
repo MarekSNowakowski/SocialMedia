@@ -19,7 +19,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task AddAsync(Votes v)
         {
-            if (!_appDbContext.Votes.Any(e=> e.PostId == v.PostId))
+            if (!_appDbContext.Votes.Include(x => x.Post).Include(x => x.Upvoter).Any(x => x.Upvoter.Id == v.Upvoter.Id && x.Post.Id == v.Post.Id))
             {
                 try
                 {
@@ -36,14 +36,14 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<IEnumerable<Votes>> BrowseAllAsync()
         {
-            return await Task.FromResult(_appDbContext.Votes.Include(p => p.Upvoters).Include(p => p.Post));
+            return await Task.FromResult(_appDbContext.Votes.Include(p => p.Upvoter).Include(p => p.Post));
         }
 
         public async Task DelAsync(int id)
         {
             try
             {
-                _appDbContext.Votes.Remove(_appDbContext.Votes.Include(p => p.Upvoters).Include(p => p.Post).FirstOrDefault(x => x.Id == id));
+                _appDbContext.Votes.Remove(_appDbContext.Votes.FirstOrDefault(x => x.Id == id));
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
             }
@@ -57,7 +57,7 @@ namespace SocialMedia.Infrastructure.Repositories
         {
             try
             {
-                _appDbContext.Votes.Remove(_appDbContext.Votes.Include(p => p.Post).FirstOrDefault(x => x.Post.Id == postId));
+                _appDbContext.Votes.RemoveRange(_appDbContext.Votes.Include(p => p.Post).Where(x => x.Post.Id == postId));
                 _appDbContext.SaveChanges();
                 await Task.CompletedTask;
             }
@@ -69,44 +69,12 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task<Votes> GetAsyncById(int id)
         {
-            return await Task.FromResult(_appDbContext.Votes.Include(p => p.Post).Include(p => p.Upvoters).FirstOrDefault(x => x.Id == id));
+            return await Task.FromResult(_appDbContext.Votes.Include(p => p.Post).Include(p => p.Upvoter).FirstOrDefault(x => x.Id == id));
         }
 
         public async Task<Votes> GetPostVotes(int postId)
         {
-            return await Task.FromResult(_appDbContext.Votes.Include(p => p.Post).Include(p => p.Upvoters).FirstOrDefault(x => x.Post.Id == postId));
-        }
-
-        public async Task UpvotePost(int postId, UserData userData)
-        {
-            try
-            {
-                var z = _appDbContext.Votes.Include(p => p.Post).Include(p => p.Upvoters).FirstOrDefault(x => x.PostId == postId);
-
-                if (z.Upvoters != null && z.Upvoters.Count > 0)
-                {
-                    if (z.Upvoters.Exists(z => z.Id == userData.Id))
-                    {
-                        z.Upvoters.Remove(z.Upvoters.Find(z => z.Id == userData.Id));
-                    }
-                    else
-                    {
-                        z.Upvoters.Add(userData);
-                    }
-                }
-                else
-                {
-                    z.Upvoters = new List<UserData>();
-                    z.Upvoters.Add(userData);
-                }
-
-                _appDbContext.SaveChanges();
-                await Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                await Task.FromException(ex);
-            }
+            return await Task.FromResult(_appDbContext.Votes.Include(p => p.Post).Include(p => p.Upvoter).FirstOrDefault(x => x.Post.Id == postId));
         }
     }
 }

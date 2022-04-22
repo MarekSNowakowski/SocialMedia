@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SocialMedia.Infrastructure.Commands;
-using SocialMedia.Infrastructure.DTO;
 using SocialMedia.Infrastructure.Services;
 using System.Threading.Tasks;
 
@@ -42,18 +40,10 @@ namespace SocialMedia.WebAPI.Controllers
 
         // reports/post/{id}
         [HttpPost("post/{id}")]
-        public async Task<IActionResult> AddReports(int id)
+        public async Task<IActionResult> AddReports(int id, [FromBody] int userId)
         {
-            await _reportsRepository.AddReportsAsync(id);
+            await _reportsRepository.AddReportsAsync(id, userId);
             return Created("", id);  //zwróci 201
-        }
-
-        // reports/post/{id}
-        [HttpPut("post/{id}")]
-        public async Task<IActionResult> ReportPost(int id, [FromBody] UserDataDTO userData)
-        {
-            await _reportsRepository.ReportPostAsync(id, userData);
-            return NoContent();
         }
 
         // reports/{id}

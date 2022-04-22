@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SocialMedia.Core.Domain;
+using System.Collections.Generic;
 
 namespace SocialMedia.Infrastructure.Repositories
 {
@@ -20,16 +21,6 @@ namespace SocialMedia.Infrastructure.Repositories
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Post>()
-                .HasOne(b => b.Votes)
-                .WithOne(i => i.Post)
-                .HasForeignKey<Votes>(b => b.PostId);
-
-            modelBuilder.Entity<Post>()
-                .HasOne(b => b.Reports)
-                .WithOne(i => i.Post)
-                .HasForeignKey<Reports>(b => b.PostId);
-
             base.OnModelCreating(modelBuilder);
         }
     }

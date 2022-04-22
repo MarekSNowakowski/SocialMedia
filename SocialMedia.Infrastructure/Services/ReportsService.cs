@@ -1,11 +1,9 @@
 ﻿using SocialMedia.Core.Domain;
 using SocialMedia.Core.Repositories;
-using SocialMedia.Infrastructure.Commands;
 using SocialMedia.Infrastructure.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SocialMedia.Infrastructure.Services
@@ -14,11 +12,13 @@ namespace SocialMedia.Infrastructure.Services
     {
         private readonly IReportsRepository _reportsRepository;
         private readonly IPostRepository _postRepository;
+        private readonly IUserDataRepository _userDataRepository;
 
-        public ReportsService(IReportsRepository reportsRepository, IPostRepository postRepository)
+        public ReportsService(IReportsRepository reportsRepository, IPostRepository postRepository, IUserDataRepository userDataRepository)
         {
             _reportsRepository = reportsRepository;
             _postRepository = postRepository;
+            _userDataRepository = userDataRepository;
         }
 
         public static IEnumerable<ReportsDTO> MapReports(IEnumerable<Reports> reports)
@@ -27,8 +27,8 @@ namespace SocialMedia.Infrastructure.Services
             {
                 Id = x.Id,
                 PostId = x.Post.Id,
-                Reporters = x.Reporters
-            });
+                Reporter = UserDataService.MapUserData(x.Reporter)
+            }); 
         }
 
         public static ReportsDTO MapReports(Reports x)
@@ -37,14 +37,14 @@ namespace SocialMedia.Infrastructure.Services
             {
                 Id = -1,
                 PostId = -1,
-                Reporters = null
+                Reporter = null
             };
 
             if (x != null)
             {
                 reports.Id = x.Id;
                 reports.PostId = x.Post.Id;
-                reports.Reporters = x.Reporters;
+                reports.Reporter = UserDataService.MapUserData(x.Reporter);
             }
 
             return reports;
@@ -68,18 +68,19 @@ namespace SocialMedia.Infrastructure.Services
                 return null;
         }
 
-        public async Task AddReportsAsync(int postId)
+        public async Task AddReportsAsync(int postId, int userId)
         {
             try
             {
                 var post = await _postRepository.GetAsync(postId);
+                var userData = await _userDataRepository.GetAsync(userId);
+
                 if (post == null) throw new NullReferenceException();
 
                 Reports newReports = new Reports()
                 {
                     Post = post,
-                    PostId = postId,
-                    Reporters = new List<UserData>()
+                    Reporter = userData
                 };
 
                 await _reportsRepository.AddAsync(newReports);
@@ -88,11 +89,6 @@ namespace SocialMedia.Infrastructure.Services
             {
                 await Task.FromException(ex);
             }
-        }
-
-        public async Task ReportPostAsync(int postId, UserDataDTO userData)
-        {
-            await _reportsRepository.ReportPost(postId, UserDataService.MapUserData(userData));
         }
 
         public async Task DeletePostReportsAsync(int postId)

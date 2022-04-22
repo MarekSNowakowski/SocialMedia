@@ -14,11 +14,13 @@ namespace SocialMedia.Infrastructure.Services
     {
         private readonly IVotesRepository _votesRepository;
         private readonly IPostRepository _postRepository;
+        private readonly IUserDataRepository _userDataRepostiory;
 
-        public VotesService(IVotesRepository votesRepository, IPostRepository postRepository)
+        public VotesService(IVotesRepository votesRepository, IPostRepository postRepository, IUserDataRepository userDataRepository)
         {
             _votesRepository = votesRepository;
             _postRepository = postRepository;
+            _userDataRepostiory = userDataRepository;
         }
 
         public static IEnumerable<VotesDTO> MapVotes(IEnumerable<Votes> votes)
@@ -27,7 +29,7 @@ namespace SocialMedia.Infrastructure.Services
             {
                 Id = x.Id,
                 PostId = x.Post.Id,
-                Upvoters = x.Upvoters
+                Upvoter = UserDataService.MapUserData(x.Upvoter)
             });
         }
 
@@ -37,14 +39,14 @@ namespace SocialMedia.Infrastructure.Services
             {
                 Id = -1,
                 PostId = -1,
-                Upvoters = null
+                Upvoter = null
             };
 
             if(x != null)
             {
                 votes.Id = x.Id;
                 votes.PostId = x.Post.Id;
-                votes.Upvoters = x.Upvoters;
+                votes.Upvoter = UserDataService.MapUserData(x.Upvoter);
             }
 
             return votes;
@@ -77,18 +79,19 @@ namespace SocialMedia.Infrastructure.Services
                 return null;
         }
 
-        public async Task AddVotesAsync(int postId)
+        public async Task AddVotesAsync(int postId, int userId)
         {
             try
             {
                 var post = await _postRepository.GetAsync(postId);
+                var userData = await _userDataRepostiory.GetAsync(userId);
+
                 if (post == null) throw new NullReferenceException();
 
                 Votes newVote = new Votes()
                 {
                     Post = post,
-                    PostId = postId,
-                    Upvoters = new List<UserData>()
+                    Upvoter = userData
                 };
 
                 await _votesRepository.AddAsync(newVote);
@@ -97,11 +100,6 @@ namespace SocialMedia.Infrastructure.Services
             {
                 await Task.FromException(ex);
             }
-        }
-
-        public async Task UpvotePostAsync(int postId, UserDataDTO userData)
-        {
-            await _votesRepository.UpvotePost(postId, UserDataService.MapUserData(userData));
         }
 
         public async Task DeletePostVotesAsync(int postId)

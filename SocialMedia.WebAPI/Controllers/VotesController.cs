@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SocialMedia.Infrastructure.Commands;
-using SocialMedia.Infrastructure.DTO;
 using SocialMedia.Infrastructure.Services;
 using System.Threading.Tasks;
 
@@ -42,18 +40,10 @@ namespace SocialMedia.WebAPI.Controllers
 
         // votes/post/{id}
         [HttpPost("post/{id}")]
-        public async Task<IActionResult> AddVotes(int id)
+        public async Task<IActionResult> AddVotes(int id, [FromBody] int userId)
         {
-            await _votesRepository.AddVotesAsync(id);
+            await _votesRepository.AddVotesAsync(id, userId);
             return Created("", id);  //zwróci 201
-        }
-
-        // votes/post/{id}
-        [HttpPut("post/{id}")]
-        public async Task<IActionResult> UpvotePost(int id, [FromBody] UserDataDTO userData)
-        {
-            await _votesRepository.UpvotePostAsync(id, userData);
-            return NoContent();
         }
 
         // votes/{id}
