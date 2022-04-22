@@ -6,13 +6,6 @@ namespace SocialMedia.WebApp.Models
     {
         public int Id { get; set; }
         public int PostId { get; set; }
-        public List<UserDataVM> Upvoters { get; set; }
-        public int Count
-        {
-            get
-            {
-                return Upvoters.Count;
-            }
-        }
+        public UserDataVM Upvoter { get; set; }
     }
 }

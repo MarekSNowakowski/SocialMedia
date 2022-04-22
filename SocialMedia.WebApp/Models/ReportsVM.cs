@@ -6,13 +6,6 @@ namespace SocialMedia.WebApp.Models
     {
         public int Id { get; set; }
         public int PostId { get; set; }
-        public List<UserDataVM> Reporters { get; set; }
-        public int Count
-        {
-            get
-            {
-                return Reporters.Count;
-            }
-        }
+        public UserDataVM Reporter { get; set; }
     }
 }

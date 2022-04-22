@@ -225,7 +225,7 @@ namespace SocialMedia.WebApp.Controllers
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                     }
-                    string _reports_restpath = GetHostUrl().Content + "votes/post/" + id;
+                    string _reports_restpath = GetHostUrl().Content + "reports/post/" + id;
                     using (var response = await httpClient.DeleteAsync($"{_reports_restpath}"))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
@@ -308,16 +308,6 @@ namespace SocialMedia.WebApp.Controllers
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                         resultID = JsonConvert.DeserializeObject<int>(apiResponse);
-                    }
-                    string _votes_restpath = GetHostUrl().Content + "votes/post/" + resultID;
-                    using (var response = await httpClient.PostAsync($"{_votes_restpath}", null))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                    }
-                    string _reports_restpath = GetHostUrl().Content + "reports/post/" + resultID;
-                    using (var response = await httpClient.PostAsync($"{_reports_restpath}", null))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
                     }
                 }
 
@@ -439,29 +429,39 @@ namespace SocialMedia.WebApp.Controllers
             string id_str = formFields["postid"];
             int id = int.Parse(id_str);
 
+            string alreadyUpvoted_str = formFields["alreadyUpvoted"];
+            bool alreadyUpvoted = bool.Parse(alreadyUpvoted_str);
+
             var tokenString = GenerateJSONWebToken();
-            string _restpath = GetHostUrl().Content + "votes/post/" + id;
+            
             string apiResponse;
 
             try
             {
-                string _restpath_user = GetHostUrl().Content + "userdata/" + await GetUserId();
-                UserDataVM userData = new UserDataVM();
-
-
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                    using (var response = await httpClient.GetAsync(_restpath_user))
+                    int userId = await GetUserId();
+
+                    if (alreadyUpvoted)
                     {
-                        apiResponse = await response.Content.ReadAsStringAsync();
-                        userData = JsonConvert.DeserializeObject<UserDataVM>(apiResponse);
+                        string _restpath = GetHostUrl().Content + "votes/post/" + id + "/user/" + userId;
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(await GetUserId());
+                        var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                        using (var response = await httpClient.DeleteAsync(_restpath))
+                        {
+                            apiResponse = await response.Content.ReadAsStringAsync();
+                        }
                     }
-                    string jsonString = System.Text.Json.JsonSerializer.Serialize(userData);
-                    var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-                    using (var response = await httpClient.PutAsync(_restpath, content))
+                    else
                     {
-                        apiResponse = await response.Content.ReadAsStringAsync();
+                        string _restpath = GetHostUrl().Content + "votes/post/" + id;
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(userId);
+                        var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                        using (var response = await httpClient.PostAsync(_restpath, content))
+                        {
+                            apiResponse = await response.Content.ReadAsStringAsync();
+                        }
                     }
                 }
             }
@@ -481,8 +481,10 @@ namespace SocialMedia.WebApp.Controllers
             string id_str = formFields["postid"];
             int id = int.Parse(id_str);
 
+            string alreadyUpvoted_str = formFields["alreadyReported"];
+            bool alreadyUpvoted = bool.Parse(alreadyUpvoted_str);
+
             var tokenString = GenerateJSONWebToken();
-            string _restpath = GetHostUrl().Content + "reports/post/" + id;
             string apiResponse;
 
             try
@@ -494,16 +496,27 @@ namespace SocialMedia.WebApp.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
-                    using (var response = await httpClient.GetAsync(_restpath_user))
+                    int userId = await GetUserId();
+
+                    if (alreadyUpvoted)
                     {
-                        apiResponse = await response.Content.ReadAsStringAsync();
-                        userData = JsonConvert.DeserializeObject<UserDataVM>(apiResponse);
+                        string _restpath = GetHostUrl().Content + "reports/post/" + id + "/user/" + userId;
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(await GetUserId());
+                        var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                        using (var response = await httpClient.DeleteAsync(_restpath))
+                        {
+                            apiResponse = await response.Content.ReadAsStringAsync();
+                        }
                     }
-                    string jsonString = System.Text.Json.JsonSerializer.Serialize(userData);
-                    var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-                    using (var response = await httpClient.PutAsync(_restpath, content))
+                    else
                     {
-                        apiResponse = await response.Content.ReadAsStringAsync();
+                        string _restpath = GetHostUrl().Content + "reports/post/" + id;
+                        string jsonString = System.Text.Json.JsonSerializer.Serialize(userId);
+                        var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                        using (var response = await httpClient.PostAsync(_restpath, content))
+                        {
+                            apiResponse = await response.Content.ReadAsStringAsync();
+                        }
                     }
                 }
             }
