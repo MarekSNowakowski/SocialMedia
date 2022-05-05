@@ -566,5 +566,28 @@ namespace SocialMedia.WebApp.Controllers
             _logger.LogInformation($"Reporting post: \"{id}\" succeded!");
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<ActionResult> DeleteReports(int id)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    string _reports_restpath = GetHostUrl().Content + "reports/post/" + id;
+                    using (var response = await httpClient.DeleteAsync($"{_reports_restpath}"))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Deleting reports failed!");
+                return View(ex);
+            }
+
+            _logger.LogInformation($"Deleting reports of post with ID: {id} succeded!");
+            return RedirectToAction(nameof(Reports));
+        }
     }
 }
