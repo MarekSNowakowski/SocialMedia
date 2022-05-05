@@ -63,7 +63,7 @@
     </div>
     <img class="card-img-bottom" style="width: 100%; display: block;" src="@photoPath" asp-append-version="true">
     <div>
-
+        <div class="btn-group ml-3 mt-3">
             <form asp-action="UpvotePost" asp-controller="Post" method="post" class="form-horizontal" role="form">
                 <div class="form-group m-3 d-flex justify-content-between ">
 
@@ -112,7 +112,7 @@
                     </div>
                 </div>
             </form>
-   
+        </div>
     </div> 
     @*Comments*@
     @foreach (var comment in item.Comments)
