@@ -32,10 +32,18 @@
                                 {
                                     { "username", User.Identity.Name },
                                 };
+                                
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-controller="Account" asp-action="Details" asp-all-route-data="user"> Account </a>
                                 </li>
-
+                                
+                                @if (User.IsInRole("admin") || User.IsInRole("moderator"))@* To display reported posts you need to be at least moderator *@
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-info" asp-controller="Post" asp-action="Reports"> Reported </a>
+                                    </li>
+                                }
+                                
                                 <li class="nav-item">
                                     <form asp-area="" asp-controller="Account" asp-action="Logout" id="logoutForm" method="post" class="navbar-right">
                                         <a class="nav-link text-light" href="javascript:document.getElementById('logoutForm').submit()">Wyloguj</a>

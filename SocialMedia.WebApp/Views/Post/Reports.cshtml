@@ -1,0 +1,124 @@
+﻿@model IEnumerable<SocialMedia.WebApp.Models.PostVM>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    ViewData["Title"] = "Index";
+    string reporting = "~/images/report.svg";
+}
+
+@if (User.IsInRole("admin") || User.IsInRole("moderator")) @* To modify posts you need to be at least moderator *@
+{
+<h1 class="mb-5"> Reported posts </h1>
+    @foreach (var item in Model.Reverse().OrderBy(x=>x.Reports.Count))
+    {
+        string photoPath = "~/images/" + (item.PhotoPath ?? "noimage.jpg");
+        string dateFormated = item.Time.ToString("M") + ", " + item.Time.ToString("t");
+
+<div class="card mb-5 box-shadow bg-secondary bg-gradient">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            @{
+                var user = new Dictionary<string, string>
+                {
+                    { "username", item.Author.Username },
+                };
+            }
+            <small class="text-light">
+                <a class="nav-link text-light" asp-controller="Account" asp-action="Details" asp-all-route-data="user">
+                    @Html.DisplayFor(modelItem => item.Author.Username)
+                </a>
+            </small>
+            <small class="text-light"> @dateFormated </small>
+            <div class="btn-group">
+                @if (User.IsInRole("admin") || User.IsInRole("moderator"))@* To modify posts you need to be at least moderator *@
+                {
+                    <button type="button" class="btn btn-sm btn-outline-dark">@Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @style = "color: white;" })</button>
+                }
+                @if (item.Author.Username == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
+                {
+                    <button type="button" class="btn btn-sm btn-outline-dark">@Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @style = "color: white;" })</button>
+                }
+            </div>
+        </div>
+        <big class="card-text">@Html.DisplayFor(modelItem => item.Title)</big>
+    </div>
+    <img class="card-img-bottom" style="width: 100%; display: block;" src="@photoPath" asp-append-version="true">
+    <div>
+
+            <form asp-action="UpvotePost" asp-controller="Post" method="post" class="form-horizontal" role="form">
+                <div class="form-group m-3 d-flex justify-content-between ">
+
+                    <input style="display:none;" id="postid" name="postid" value="@item.Id" />
+
+                    <div class="float-right">
+                        @{
+                            var vote_color = "bg-primary";
+                            var alreadyUpvoted = false;
+
+                            if (item.Votes.Any(x => x.Upvoter.Username == User.Identity.Name))
+                            {
+                                alreadyUpvoted = true;
+                                vote_color = "bg-success";
+                            }
+                            
+                        }
+                        <input style="display:none;" id="alreadyUpvoted" name="alreadyUpvoted" value="@alreadyUpvoted.ToString()" />
+                        <input style="display:none;" id="fromReports" name="fromReports" value="yes" />
+                        <input type="submit" class="btn btn-primary @vote_color" value="+ @item.Votes.Count"  />
+                    </div>
+                </div>
+            </form>
+
+                <div class="form-group m-3 d-flex justify-content-between ">
+                    <input style="display:none;" id="postid" name="postid" value="@item.Id" />
+
+                    <div class="float-right">
+                        @{
+                            var report_color = "bg-primary";
+                            var alreadyReported = false;
+
+                            if (item.Reports.Count > 0 && item.Reports.Any(x => x.Reporter.Username == User.Identity.Name))
+                            {
+                                alreadyReported = true;
+                                report_color = "bg-danger";
+                            }
+                        }
+                        <input style="display:none;" id="alreadyReported" name="alreadyReported" value="@alreadyReported.ToString()" />
+
+                        <div class="input-group mb-3">
+                          <div id="report" class="btn btn-primary @report_color">
+                            <img src="@reporting" alt="Report post" class="text-white" style="color: white" asp-append-version="true" />
+                            Reports: @item.Reports.Count
+                         </div>
+                        </div>                            
+                    </div>
+                </div>
+   
+    </div> 
+    @*Comments*@
+    @foreach (var comment in item.Comments)
+    {
+        string commentDateFormated = comment.Time.ToString("M") + ", " + item.Time.ToString("t");
+
+        <div class="card box-shadow bg-secondary bg-gradient">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                @{
+                    var commentuser = new Dictionary<string, string>
+                    {
+                        { "username", comment.Author.Username },
+                    };
+                }
+                <small class="text-light">
+                    <a class="nav-link text-light" asp-controller="Account" asp-action="Details" asp-all-route-data="commentuser">
+                        @comment.Author.Username
+                    </a>
+                </small>
+
+                <small class="card-text h6 ml-3"> @comment.Content </small>
+                <small class="text-light"> @commentDateFormated </small>
+            </div>
+        </div>
+    }
+</div>
+    }}

@@ -103,6 +103,38 @@ namespace SocialMedia.WebApp.Controllers
             return View(postList);    //view is strongly typed
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> Reports()
+        {
+            var tokenString = GenerateJSONWebToken();
+
+            string _restpath = GetHostUrl().Content + CN();
+
+            List<PostVM> postList = new List<PostVM>();
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync(_restpath))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        postList = JsonConvert.DeserializeObject<List<PostVM>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Getting posts failed!");
+                return View(ex);
+            }
+
+            postList = postList.FindAll(x => x.Reports.Count > 0);  // Get only reported posts
+
+            return View(postList);    //view is strongly typed
+        }
+
         public async Task<IActionResult> Edit(int id)
         {
             var tokenString = GenerateJSONWebToken();
@@ -427,6 +459,8 @@ namespace SocialMedia.WebApp.Controllers
         public async Task<IActionResult> UpvotePost(IFormCollection formFields)
         {
             string id_str = formFields["postid"];
+            string from_reports = formFields["fromReports"];
+
             int id = int.Parse(id_str);
 
             string alreadyUpvoted_str = formFields["alreadyUpvoted"];
@@ -472,6 +506,9 @@ namespace SocialMedia.WebApp.Controllers
             }
 
             _logger.LogInformation($"Upvoting post: \"{id}\" succeded!");
+
+            if (from_reports != null && from_reports == "yes")
+                return RedirectToAction(nameof(Reports));
             return RedirectToAction(nameof(Index));
         }
 
