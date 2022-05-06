@@ -1,0 +1,80 @@
+﻿@model IEnumerable<SocialMedia.WebApp.Models.PostVM>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<p>
+    <a asp-controller="Post" asp-action="GenerateReport">Generate report</a> 
+</p>
+
+<table class="table text-white">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Votes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Comments)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reports)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Time)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            @{
+                var user = new Dictionary<string, string>
+                {
+                    { "username", item.Author.Username },
+                };
+            }
+            <td>
+                <a asp-controller="Account" asp-action="Details" asp-all-route-data="user">
+                    @Html.DisplayFor(modelItem => item.Author.Username)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Votes.Count)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comments.Count)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reports.Count)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Time)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

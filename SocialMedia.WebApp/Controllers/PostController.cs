@@ -103,7 +103,7 @@ namespace SocialMedia.WebApp.Controllers
             return View(postList);    //view is strongly typed
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "admin,moderator")]
         public async Task<IActionResult> Reports()
         {
             var tokenString = GenerateJSONWebToken();
@@ -567,6 +567,7 @@ namespace SocialMedia.WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "admin,moderator")]
         public async Task<ActionResult> DeleteReports(int id)
         {
             try
@@ -588,6 +589,36 @@ namespace SocialMedia.WebApp.Controllers
 
             _logger.LogInformation($"Deleting reports of post with ID: {id} succeded!");
             return RedirectToAction(nameof(Reports));
+        }
+
+        [Authorize(Roles = "admin,moderator")]
+        public async Task<ActionResult> Statistics()
+        {
+            var tokenString = GenerateJSONWebToken();
+
+            string _restpath = GetHostUrl().Content + CN();
+
+            List<PostVM> postList = new List<PostVM>();
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync(_restpath))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        postList = JsonConvert.DeserializeObject<List<PostVM>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Getting posts failed!");
+                return View(ex);
+            }
+
+            return View(postList);    //view is strongly typed
         }
     }
 }
