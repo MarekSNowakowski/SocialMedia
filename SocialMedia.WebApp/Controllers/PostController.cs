@@ -103,6 +103,36 @@ namespace SocialMedia.WebApp.Controllers
             return View(postList);    //view is strongly typed
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int id)
+        {
+            var tokenString = GenerateJSONWebToken();
+
+            string _restpath = GetHostUrl().Content + CN();
+
+            PostVM post = new PostVM();
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync($"{_restpath}/{id}"))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        post = JsonConvert.DeserializeObject<PostVM>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Getting posts failed!");
+                return View(ex);
+            }
+
+            return View(post);    //view is strongly typed
+        }
+
         [Authorize(Roles = "admin,moderator")]
         public async Task<IActionResult> Reports()
         {
