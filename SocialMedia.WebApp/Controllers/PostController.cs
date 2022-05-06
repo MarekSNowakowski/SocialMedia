@@ -16,6 +16,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
+using IronXL;
 
 namespace SocialMedia.WebApp.Controllers
 {
@@ -649,6 +650,57 @@ namespace SocialMedia.WebApp.Controllers
             }
 
             return View(postList);    //view is strongly typed
+        }
+
+        [Authorize(Roles = "admin,moderator")]
+        public async Task<ActionResult> GenerateReport()
+        {
+            var tokenString = GenerateJSONWebToken();
+
+            string _restpath = GetHostUrl().Content + CN();
+
+            List<PostVM> postList = new List<PostVM>();
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+                    using (var response = await httpClient.GetAsync(_restpath))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        postList = JsonConvert.DeserializeObject<List<PostVM>>(apiResponse);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Getting posts failed!");
+                return View(ex);
+            }
+
+            GenerateWorkbook(postList);
+
+            return RedirectToAction("Statistics");
+        }
+
+        private void GenerateWorkbook(List<PostVM> postList)
+        {
+            WorkBook workbook = WorkBook.Create(ExcelFileFormat.XLSX);
+            var sheet = workbook.CreateWorkSheet("posts_sheet");
+
+            sheet["A1"].Value = "Id";
+            sheet["B1"].Value = "Title";
+            sheet["C1"].Value = "Time";
+            sheet["D1"].Value = "Upvotes";
+            sheet["E1"].Value = "Comments";
+            sheet["F1"].Value = "Reports";
+            sheet["G1"].Value = "Author Id";
+            sheet["H1"].Value = "Author Username";
+            sheet["I1"].Value = "Author email";
+
+            sheet.SaveAs($"post_report_{DateTime.Now:yyyy}_{DateTime.Now:MM}_{DateTime.Now:dd}.csv");
+
         }
     }
 }
