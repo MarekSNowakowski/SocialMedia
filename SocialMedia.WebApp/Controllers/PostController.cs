@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using IronXL;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace SocialMedia.WebApp.Controllers
 {
@@ -679,15 +680,28 @@ namespace SocialMedia.WebApp.Controllers
                 return View(ex);
             }
 
-            GenerateWorkbook(postList);
+            var filename = GenerateWorkbook(postList);
+   
+            byte[] filedata = System.IO.File.ReadAllBytes(filename);
+            string contentType;
+            new FileExtensionContentTypeProvider().TryGetContentType(filename, out contentType);
 
-            return RedirectToAction("Statistics");
+            var cd = new System.Net.Mime.ContentDisposition
+            {
+                FileName = filename,
+                Inline = true,
+            };
+
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+
+            return File(filedata, contentType);
         }
 
-        private void GenerateWorkbook(List<PostVM> postList)
+        private string GenerateWorkbook(List<PostVM> postList)
         {
             WorkBook workbook = WorkBook.Create(ExcelFileFormat.XLSX);
             var sheet = workbook.CreateWorkSheet("posts_sheet");
+            var filename = $"post_report_{DateTime.Now:yyyy}_{DateTime.Now:MM}_{DateTime.Now:dd}.csv";
 
             sheet["A1"].Value = "Id";
             sheet["B1"].Value = "Title";
@@ -699,8 +713,9 @@ namespace SocialMedia.WebApp.Controllers
             sheet["H1"].Value = "Author Username";
             sheet["I1"].Value = "Author email";
 
-            sheet.SaveAs($"post_report_{DateTime.Now:yyyy}_{DateTime.Now:MM}_{DateTime.Now:dd}.csv");
+            sheet.SaveAs(filename);
 
+            return filename;
         }
     }
 }
