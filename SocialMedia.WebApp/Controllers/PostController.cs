@@ -680,9 +680,9 @@ namespace SocialMedia.WebApp.Controllers
                 return View(ex);
             }
 
-            var filename = GenerateWorkbook(postList);
-   
-            byte[] filedata = System.IO.File.ReadAllBytes(filename);
+            byte[] filedata = GenerateWorkbook(postList);
+            var filename = $"post_report_{DateTime.Now:yyyy}_{DateTime.Now:MM}_{DateTime.Now:dd}.csv";
+
             string contentType;
             new FileExtensionContentTypeProvider().TryGetContentType(filename, out contentType);
 
@@ -697,11 +697,10 @@ namespace SocialMedia.WebApp.Controllers
             return File(filedata, contentType);
         }
 
-        private string GenerateWorkbook(List<PostVM> postList)
+        private byte[] GenerateWorkbook(List<PostVM> postList)
         {
             WorkBook workbook = WorkBook.Create(ExcelFileFormat.XLSX);
             var sheet = workbook.CreateWorkSheet("posts_sheet");
-            var filename = $"post_report_{DateTime.Now:yyyy}_{DateTime.Now:MM}_{DateTime.Now:dd}.csv";
 
             sheet["A1"].Value = "Id";
             sheet["B1"].Value = "Title";
@@ -713,9 +712,22 @@ namespace SocialMedia.WebApp.Controllers
             sheet["H1"].Value = "Author Username";
             sheet["I1"].Value = "Author email";
 
-            sheet.SaveAs(filename);
+            int i = 2;
+            foreach (var post in postList)
+            {
+                sheet[$"A{i}"].Value = post.Id;
+                sheet[$"B{i}"].Value = post.Title;
+                sheet[$"C{i}"].Value = post.Time;
+                sheet[$"D{i}"].Value = post.Votes.Count;
+                sheet[$"E{i}"].Value = post.Comments.Count;
+                sheet[$"F{i}"].Value = post.Reports.Count;
+                sheet[$"G{i}"].Value = post.Author.Id;
+                sheet[$"H{i}"].Value = post.Author.Username;
+                sheet[$"I{i}"].Value = post.Author.Email;
+                i++;
+            }
 
-            return filename;
+            return workbook.ToBinary();
         }
     }
 }
