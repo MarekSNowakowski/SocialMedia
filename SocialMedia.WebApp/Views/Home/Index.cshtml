@@ -1,8 +1,27 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Witaj</h1>
-    <p>Projekt na przedmiot "Programowanie aplikacji mobilnych i webowych" 2021Z - Marek Nowakowski</p>
+    <p>Projekt serwis Social Media w .Net - Marek Nowakowski</p>
+
+        <div class="btn-group mt-4">
+            <button type="button" class="btn btn-outline-secondary">
+                <h2>
+                    @Html.ActionLink("Wyświetl posty", "Index", "Post", null, new { @style = "color: white;" })
+                </h2>
+            </button>
+        </div>
+        @if (!SignInManager.IsSignedIn(User))
+        {
+        <p>
+            <p>
+                <a asp-controller="Account" asp-action="Login">Zaloguj się</a> lub <a asp-controller="Account" asp-action="Register">Zarejestruj się :)</a>
+            </p>
+        </p>
+        }
 </div>
