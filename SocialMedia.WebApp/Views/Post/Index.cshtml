@@ -135,6 +135,10 @@
 
                 <small class="card-text h6 ml-3"> @comment.Content </small>
                 <small class="text-light"> @commentDateFormated </small>
+                @if (comment.Author.Username == User.Identity.Name || User.IsInRole("admin") || User.IsInRole("moderator"))
+                {
+                    <button type="button" class="btn btn-sm btn-outline-dark">@Html.ActionLink("Delete", "DeleteComment", new { id = comment.Id }, new { @style = "color: white;" })</button>
+                }
             </div>
         </div>
     }

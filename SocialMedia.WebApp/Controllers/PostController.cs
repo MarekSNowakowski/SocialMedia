@@ -487,6 +487,30 @@ namespace SocialMedia.WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> DeleteComment(int id)
+        {
+            string _restpath = GetHostUrl().Content + "comment";
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.DeleteAsync($"{_restpath}/{id}"))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Deleting comment with ID {id} failed!");
+                return View(ex);
+            }
+
+            _logger.LogInformation($"Deleting comment with ID: {id} succeded!");
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpPost]
         public async Task<IActionResult> UpvotePost(IFormCollection formFields)
         {
